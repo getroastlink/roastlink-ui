@@ -3,69 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RoastLink Mini</title>
+  <title>RoastLink Setup</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 2rem;
-      background: #f7f7f7;
-      color: #333;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
     .card {
       background: white;
-      border-radius: 10px;
-      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      padding: 2rem;
       max-width: 400px;
-      margin: auto;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      text-align: center;
     }
     h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-      font-size: 1.8rem;
-    }
-    .temp {
-      display: flex;
-      justify-content: space-between;
+      color: #343a40;
       margin-bottom: 0.5rem;
-      font-size: 1.2rem;
+    }
+    p {
+      color: #6c757d;
+      margin-bottom: 1.5rem;
+    }
+    .info {
+      font-size: 0.9rem;
+      background: #f1f3f5;
+      padding: 0.5rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      color: #495057;
+    }
+    .btn {
+      background-color: #2f74c0;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .btn:hover {
+      background-color: #1f5fa1;
     }
     .footer {
-      text-align: center;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
+      color: #adb5bd;
       margin-top: 2rem;
-      color: #888;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h1>RoastLink Mini</h1>
-    <div class="temp">
-      <span>ET:</span>
-      <span id="et">-- °F</span>
+    <h1>RoastLink Connected</h1>
+    <p>Your device is now online.</p>
+    <div class="info">
+      <strong>Device IP:</strong> <span id="ip">Loading...</span>
     </div>
-    <div class="temp">
-      <span>BT:</span>
-      <span id="bt">-- °F</span>
+    <div class="info">
+      <strong>Try this address:</strong><br>
+      <a href="http://roastlink.local">http://roastlink.local</a>
     </div>
-    <div class="footer">Live reading from your device</div>
+    <form action="/reset" method="POST">
+      <button class="btn">Reset WiFi Settings</button>
+    </form>
+    <div class="footer">RoastLink by Pavel – 2025</div>
   </div>
 
   <script>
-    async function fetchTemps() {
-      try {
-        const response = await fetch("/data.json");
-        const { et, bt } = await response.json();
-        document.getElementById("et").textContent = `${et} °F`;
-        document.getElementById("bt").textContent = `${bt} °F`;
-      } catch (e) {
-        console.log("Failed to fetch temps");
-      }
+    // Optional: load IP from query string if present
+    const params = new URLSearchParams(window.location.search);
+    const ip = params.get("ip");
+    if (ip) {
+      document.getElementById("ip").textContent = ip;
+    } else {
+      fetch("http://roastlink.local/info.json")
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("ip").textContent = data.ip || 'Unavailable';
+        })
+        .catch(() => {
+          document.getElementById("ip").textContent = "Unavailable";
+        });
     }
-
-    setInterval(fetchTemps, 1000);
   </script>
 </body>
 </html>
