@@ -7,7 +7,7 @@ let rorList = [];
 
 // This function fetches the latest temps and updates the UI
 function updateTemps() {
-  fetch("http://roastlink.local/info.json") // Fetch live data from the device
+  fetch("http://192.168.0.18/info.json") // Fetch live data from the device
     .then(res => res.json())
     .then(data => {
       const now = Date.now(); // Current timestamp
