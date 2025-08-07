@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RoastLink Mini</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      background: #f7f7f7;
+      color: #333;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 1.5rem;
+      max-width: 400px;
+      margin: auto;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+    }
+    .temp {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>RoastLink Mini</h1>
+    <div class="temp">
+      <span>ET:</span>
+      <span id="et">-- °F</span>
+    </div>
+    <div class="temp">
+      <span>BT:</span>
+      <span id="bt">-- °F</span>
+    </div>
+    <div class="footer">Live reading from your device</div>
+  </div>
+
+  <script>
+    async function fetchTemps() {
+      try {
+        const response = await fetch("/data.json");
+        const { et, bt } = await response.json();
+        document.getElementById("et").textContent = `${et} °F`;
+        document.getElementById("bt").textContent = `${bt} °F`;
+      } catch (e) {
+        console.log("Failed to fetch temps");
+      }
+    }
+
+    setInterval(fetchTemps, 1000);
+  </script>
+</body>
+</html>
