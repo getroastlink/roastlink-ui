@@ -1,98 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RoastLink Setup</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-      padding: 2rem;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-    }
-    h1 {
-      color: #343a40;
-      margin-bottom: 0.5rem;
-    }
-    p {
-      color: #6c757d;
-      margin-bottom: 1.5rem;
-    }
-    .info {
-      font-size: 0.9rem;
-      background: #f1f3f5;
-      padding: 0.5rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      color: #495057;
-    }
-    .btn {
-      background-color: #2f74c0;
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    .btn:hover {
-      background-color: #1f5fa1;
-    }
-    .footer {
-      font-size: 0.8rem;
-      color: #adb5bd;
-      margin-top: 2rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>RoastLink Connected</h1>
-    <p>Your device is now online.</p>
-    <div class="info">
-      <strong>Device IP:</strong> <span id="ip">Loading...</span>
-    </div>
-    <div class="info">
-      <strong>Try this address:</strong><br>
-      <a href="http://roastlink.local">http://roastlink.local</a>
-    </div>
-    <form action="/reset" method="POST">
-      <button class="btn">Reset WiFi Settings</button>
-    </form>
-    <div class="footer">RoastLink by Pavel – 2025</div>
-  </div>
+<script>
+let prevBT = null;
+let prevTime = null;
+let rorList = [];
 
-  <script>
-    // Optional: load IP from query string if present
-    const params = new URLSearchParams(window.location.search);
-    const ip = params.get("ip");
-    if (ip) {
-      document.getElementById("ip").textContent = ip;
-    } else {
-      fetch("http://roastlink.local/info.json")
-        .then(res => res.json())
-        .then(data => {
-          document.getElementById("ip").textContent = data.ip || 'Unavailable';
-        })
-        .catch(() => {
-          document.getElementById("ip").textContent = "Unavailable";
-        });
-    }
-  </script>
-</body>
-</html>
+function updateTemps() {
+  fetch("/info.json")
+    .then(res => res.json())
+    .then(data => {
+      const now = Date.now();
+      const bt = data.bt;
+      const et = data.et;
+
+      document.getElementById("bt").textContent = bt.toFixed(2);
+      document.getElementById("et").textContent = et.toFixed(2);
+
+      // RoR
+      if (prevBT !== null && prevTime !== null) {
+        const dt = (now - prevTime) / 1000;
+        const delta = bt - prevBT;
+        const ror = (delta / dt) * 60;
+        rorList.push(ror);
+        if (rorList.length > 10) rorList.shift();
+
+        const avgRor = rorList.reduce((a, b) => a + b, 0) / rorList.length;
+
+        document.getElementById("ror").textContent = ror.toFixed(1);
+        document.getElementById("avgRor").textContent = avgRor.toFixed(1);
+      }
+
+      prevBT = bt;
+      prevTime = now;
+    })
+    .catch(console.error);
+}
+
+setInterval(updateTemps, 1000);
+</script>
+<div style="margin-top: 20px;">
+  <h3>Live Readings</h3>
+  <p>ET: <strong id="et">--</strong> °F</p>
+  <p>BT: <strong id="bt">--</strong> °F</p>
+  <p>RoR: <strong id="ror">--</strong> °F/min</p>
+  <p>Avg RoR: <strong id="avgRor">--</strong> °F/min</p>
+</div>
