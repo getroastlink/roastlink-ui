@@ -1,45 +1,59 @@
 <script>
+// Stores previous BT and time to calculate RoR
 let prevBT = null;
 let prevTime = null;
+// Holds a rolling list of recent RoR values for smoothing
 let rorList = [];
 
+// This function fetches the latest temps and updates the UI
 function updateTemps() {
-  fetch("/info.json")
+  fetch("/info.json") // Fetch live data from the device
     .then(res => res.json())
     .then(data => {
-      const now = Date.now();
+      const now = Date.now(); // Current timestamp
       const bt = data.bt;
       const et = data.et;
 
+      // Update ET and BT values on the page
       document.getElementById("bt").textContent = bt.toFixed(2);
       document.getElementById("et").textContent = et.toFixed(2);
 
-      // RoR
+      // Only calculate RoR if we’ve seen values before
       if (prevBT !== null && prevTime !== null) {
-        const dt = (now - prevTime) / 1000;
-        const delta = bt - prevBT;
-        const ror = (delta / dt) * 60;
-        rorList.push(ror);
-        if (rorList.length > 10) rorList.shift();
+        const dt = (now - prevTime) / 1000; // Time difference in seconds
+        if (dt >= 0.5) { // Avoids spikes if polling too fast
+          const delta = bt - prevBT;
+          const ror = (delta / dt) * 60; // °F per minute
 
-        const avgRor = rorList.reduce((a, b) => a + b, 0) / rorList.length;
+          // Store the recent RoR value
+          rorList.push(ror);
+          if (rorList.length > 10) rorList.shift(); // Keep last 10 values
 
-        document.getElementById("ror").textContent = ror.toFixed(1);
-        document.getElementById("avgRor").textContent = avgRor.toFixed(1);
+          // Compute average RoR from recent values
+          const avgRor = rorList.reduce((a, b) => a + b, 0) / rorList.length;
+
+          // Update UI with rounded RoR and average
+          document.getElementById("ror").textContent = ror.toFixed(1);
+          document.getElementById("avgRor").textContent = avgRor.toFixed(1);
+        }
       }
 
+      // Update stored previous values for next cycle
       prevBT = bt;
       prevTime = now;
     })
-    .catch(console.error);
+    .catch(console.error); // Log any fetch errors to console
 }
 
+// Call updateTemps every second
 setInterval(updateTemps, 1000);
 </script>
+
+<!-- Readings UI block -->
 <div style="margin-top: 20px;">
   <h3>Live Readings</h3>
-  <p>ET: <strong id="et">--</strong> °F</p>
-  <p>BT: <strong id="bt">--</strong> °F</p>
-  <p>RoR: <strong id="ror">--</strong> °F/min</p>
-  <p>Avg RoR: <strong id="avgRor">--</strong> °F/min</p>
+  <p>ET: <strong id="et">--</strong> °F</p> <!-- Exhaust Temperature -->
+  <p>BT: <strong id="bt">--</strong> °F</p> <!-- Bean Temperature -->
+  <p>RoR: <strong id="ror">--</strong> °F/min</p> <!-- Rate of Rise (instant) -->
+  <p>Avg RoR: <strong id="avgRor">--</strong> °F/min</p> <!-- Average RoR (smoothed) -->
 </div>
