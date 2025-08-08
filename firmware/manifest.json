@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
-  "bin": "https://raw.githubusercontent.com/getroastlink/roastlink-ui/main/firmware/roastlink-two-v1.0.1.bin",
+  "version": "1.0.2",
+  "bin": "https://github.com/getroastlink/roastlink-ui/raw/refs/heads/main/firmware/roastlink-two-v1.0.1.bin",
   "sha256": ""
 }
