@@ -1,5 +1,5 @@
 {
-  "version": "1.0.9",
-  "bin": "https://ota.roastlink.com/firmware/roastlink-two-v1.0.9.bin",
+  "version": "0.8.1",
+  "bin": "https://ota.roastlink.com/firmware/roastlink-two-v0.8.1.bin",
   "sha256": ""
 }
