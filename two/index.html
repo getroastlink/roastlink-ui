@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>RoastLink Firmware Updater</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Espressif Web Flasher (official CDN) -->
+  <script type="module" src="https://unpkg.com/esp-web-tools@9.1.1/dist/web/install-button.js?module"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>RoastLink TWO – Firmware Updater</h1>
+    <p>Click the button below to update your device to the latest firmware.</p>
+
+    <!-- Install button points to your manifest.json -->
+    <esp-web-install-button manifest="https://ota.roastlink.com/two/manifest_firmware.json"></esp-web-install-button>
+
+    <p style="margin-top:20px; font-size: 0.9em; color: #555;">
+      Make sure your RoastLink TWO is plugged in via USB-C.<br>
+      Works best in Chrome or Edge.
+    </p>
+  </div>
+</body>
+</html>
