@@ -4,6 +4,7 @@
   "builds": [
     {
       "chipFamily": "ESP32-S3",
+      "eraseChip": true,
       "parts": [
         {
           "path": "https://ota.roastlink.com/two/TWO.ino.bootloader.bin",
