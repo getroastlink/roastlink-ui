@@ -19,7 +19,7 @@
   <p>Reflash your RoastLink TWO (ESP32-S3) directly in your browser.</p>
 
   <select id="firmware">
-    <option value="roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
+    <option value="https://ota.roastlink.com/two/roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
   </select>
   <button id="flashBtn">Connect & Flash</button>
   <div id="log">Waiting...</div>
@@ -34,8 +34,9 @@
     }
   </script>
 
+  <!-- ✅ LOCAL esptool bundle -->
   <script type="module">
-    import { ESPLoader } from "https://cdn.jsdelivr.net/gh/espressif/esptool-js@main/dist/web/index.js";
+    import { ESPLoader } from "./bundle.js";   // same folder as index.html
 
     const logBox = document.getElementById("log");
     const flashBtn = document.getElementById("flashBtn");
