@@ -55,11 +55,20 @@
         const port = await navigator.serial.requestPort();
         await port.open({ baudRate: 921600 });
 
-        log("⚙️ Connecting to ESP32-S3…");
-        const loader = new ESPLoader(port);
-        await loader.initialize();
-        const info = await loader.getChipInfo();
-        log(`✅ Connected: ${info.name}`);
+log("⚙️ Connecting to ESP32-S3…");
+const loader = new ESPLoader(port);
+await loader.initialize();
+
+let chipName = "Unknown chip";
+try {
+  const info = await loader.chip.get_info(); // older API (Meshtastic build)
+  chipName = info?.chip ?? "ESP32-S3";
+} catch (e) {
+  log("⚠️ Using fallback getChipDescription()");
+  chipName = loader.chipName || loader.getChipDescription?.() || "ESP32-S3";
+}
+
+log(`✅ Connected: ${chipName}`);
 
         log("📦 Uploading stub…");
         const stub = await fetchStub();
