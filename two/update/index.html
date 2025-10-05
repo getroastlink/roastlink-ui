@@ -11,66 +11,62 @@
   button:disabled { background:#555; cursor:not-allowed; }
   #log { text-align:left; background:#181818; color:#cfcfcf; margin-top:25px; padding:15px;
          border-radius:8px; max-width:700px; margin-inline:auto; white-space:pre-line; }
-  select { font-size:1em; padding:8px; margin:10px; border-radius:6px; }
 </style>
 </head>
 <body>
   <h1>🔥 RoastLink TWO Web Flasher</h1>
-  <p>Reflash your RoastLink TWO (ESP32-S3) directly in your browser.</p>
+  <p>Flash the latest firmware to your RoastLink TWO (ESP32-S3) directly in your browser.</p>
 
-  <select id="firmware">
-    <option value="https://ota.roastlink.com/two/roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
-  </select>
   <button id="flashBtn">Connect & Flash</button>
   <div id="log">Waiting...</div>
 
-  <!-- Early serial check -->
-  <script>
-    if (!("serial" in navigator)) {
-      document.body.innerHTML = `
-        <h2 style="color:#ff5252;">⚠️ Web Serial not available</h2>
-        <p>This page must be opened in <b>Google Chrome</b> or <b>Microsoft Edge</b><br>
-        (and over <b>HTTPS</b> or <b>localhost</b>).</p>`;
-    }
-  </script>
-
-  <!-- Local ESPLoader -->
   <script type="module">
-    import { ESPLoader } from "./index.js";
+    import { ESPLoader } from "./esploader.js";
+    import { Transport } from "./webserial.js";
+    import { getStubJsonByChipName } from "./stubFlasher.js";
 
     const logBox = document.getElementById("log");
-    const flashBtn = document.getElementById("flashBtn");
     const log = msg => { console.log(msg); logBox.textContent += msg + "\n"; logBox.scrollTop = logBox.scrollHeight; };
 
+    const flashBtn = document.getElementById("flashBtn");
     flashBtn.onclick = async () => {
       try {
-        const firmwareUrl = document.getElementById("firmware").value;
-        log(`🔌 Requesting device…`);
+        if (!("serial" in navigator)) {
+          log("⚠️ Web Serial not supported. Use Chrome or Edge.");
+          return;
+        }
+
+        const firmwareUrl = "./roastlink-two-v0.9.4.bin";
+        log("🔌 Requesting device…");
         const port = await navigator.serial.requestPort();
-        await port.open({ baudRate: 921600 });
+        const transport = new Transport(port);
+        await transport.open();
 
         log("⚙️ Connecting to ESP32-S3…");
-        const loader = new ESPLoader(port);
+        const loader = new ESPLoader(transport);
         await loader.initialize();
+        const chipName = await loader.chip.get_chip_description();
+        log(`✅ Connected to ${chipName}`);
 
-        const chipName = loader.chipName || loader.get_chip_description?.() || "ESP32-S3";
-        log(`✅ Connected: ${chipName}`);
+        log("📦 Uploading stub…");
+        const stub = await getStubJsonByChipName(chipName);
+        await loader.load_stub(stub);
+        log("🧠 Stub loaded successfully");
 
-        log(`⬇️ Downloading firmware from ${firmwareUrl}`);
+        log("⬇️ Downloading firmware…");
         const resp = await fetch(firmwareUrl);
         const firmware = new Uint8Array(await resp.arrayBuffer());
         log(`Firmware size: ${firmware.length} bytes`);
 
         log("⚡ Erasing flash…");
-        await loader.eraseFlash();
+        await loader.erase_flash();
 
         log("🚀 Flashing firmware…");
-        await loader.flashData(firmware, 0x10000, true);
+        await loader.flash_data(firmware, 0x10000, true);
 
-        log("✅ Flash complete. Rebooting…");
-        await loader.hardReset();
-        await port.close();
-
+        log("✅ Flash complete! Rebooting…");
+        await loader.hard_reset();
+        await transport.disconnect();
         log("🎉 Done! Your RoastLink TWO is now updated.");
       } catch (err) {
         console.error(err);
