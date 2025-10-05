@@ -25,6 +25,13 @@
   <div id="log">Waiting...</div>
 
   <script type="module">
+    if (!("serial" in navigator)) {
+  document.body.innerHTML = `
+    <h2 style="color:#ff5252;">⚠️ Web Serial not available</h2>
+    <p>This page must be opened in <b>Google Chrome</b> or <b>Microsoft Edge</b><br>
+    (and over <b>HTTPS</b> or <b>localhost</b>).</p>`;
+  throw new Error("Web Serial not supported");
+}
     import { ESPLoader } from "https://unpkg.com/esptool-js@0.5.7/dist/web/index.min.js";
 
     const logBox = document.getElementById("log");
