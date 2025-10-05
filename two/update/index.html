@@ -1,59 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>RoastLink TWO Web Flasher</title>
 <style>
-  body {
-    font-family: system-ui, sans-serif;
-    background: #0e0e0e;
-    color: #eee;
-    text-align: center;
-    padding: 40px;
-  }
-  h1 { color: #ff7b00; }
-  button {
-    font-size: 1.1em;
-    padding: 10px 20px;
-    margin: 15px;
-    background: #ff7b00;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  button:disabled {
-    background: #555;
-    cursor: not-allowed;
-  }
-  #log {
-    background: #181818;
-    color: #cfcfcf;
-    text-align: left;
-    padding: 15px;
-    margin: 25px auto;
-    max-width: 700px;
-    white-space: pre-line;
-    border-radius: 8px;
-  }
+  body { font-family:sans-serif; background:#0e0e0e; color:#eee; text-align:center; padding:40px; }
+  button { font-size:1.1em; padding:10px 20px; border:none; border-radius:8px; margin:10px;
+           background:#ff7b00; color:#fff; cursor:pointer; }
+  button:disabled { background:#555; cursor:not-allowed; }
+  #log { text-align:left; background:#181818; color:#cfcfcf; margin-top:25px; padding:15px;
+         border-radius:8px; max-width:700px; margin-inline:auto; white-space:pre-line; }
+  select { font-size:1em; padding:8px; margin:10px; border-radius:6px; }
 </style>
 </head>
 <body>
   <h1>🔥 RoastLink TWO Web Flasher</h1>
-  <p>Flash the latest RoastLink TWO firmware (ESP32-S3) directly from your browser.</p>
+  <p>Reflash your RoastLink TWO (ESP32-S3) directly in your browser.</p>
 
   <select id="firmware">
-    <option value="https://ota.roastlink.com/two/roastlink-two-v0.9.4.bin">
-      v0.9.4 – latest stable
-    </option>
+    <option value="https://ota.roastlink.com/two/roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
   </select>
-  <br>
   <button id="flashBtn">Connect & Flash</button>
   <div id="log">Waiting...</div>
 
+  <!-- Early serial check -->
   <script>
-    // Early Web Serial check
     if (!("serial" in navigator)) {
       document.body.innerHTML = `
         <h2 style="color:#ff5252;">⚠️ Web Serial not available</h2>
@@ -62,21 +34,18 @@
     }
   </script>
 
+  <!-- Local ESPLoader -->
   <script type="module">
-  import { ESPLoader } from "https://cdn.jsdelivr.net/gh/espressif/esptool-js@0.5.7/dist/web/index.js";
+    import { ESPLoader } from "./esptool/index.js";
 
     const logBox = document.getElementById("log");
     const flashBtn = document.getElementById("flashBtn");
-    const log = msg => {
-      console.log(msg);
-      logBox.textContent += msg + "\n";
-      logBox.scrollTop = logBox.scrollHeight;
-    };
+    const log = msg => { console.log(msg); logBox.textContent += msg + "\n"; logBox.scrollTop = logBox.scrollHeight; };
 
     flashBtn.onclick = async () => {
       try {
         const firmwareUrl = document.getElementById("firmware").value;
-        log("🔌 Requesting device…");
+        log(`🔌 Requesting device…`);
         const port = await navigator.serial.requestPort();
         await port.open({ baudRate: 921600 });
 
@@ -84,11 +53,10 @@
         const loader = new ESPLoader(port);
         await loader.initialize();
 
-        const chipDesc = await loader.getChipDescription();
-        const chipName = await loader.getChipName();
-        log(`✅ Connected: ${chipDesc} (${chipName})`);
+        const chipName = loader.chipName || loader.get_chip_description?.() || "ESP32-S3";
+        log(`✅ Connected: ${chipName}`);
 
-        log(`⬇️ Fetching firmware from ${firmwareUrl}…`);
+        log(`⬇️ Downloading firmware from ${firmwareUrl}`);
         const resp = await fetch(firmwareUrl);
         const firmware = new Uint8Array(await resp.arrayBuffer());
         log(`Firmware size: ${firmware.length} bytes`);
@@ -96,13 +64,14 @@
         log("⚡ Erasing flash…");
         await loader.eraseFlash();
 
-        log("🚀 Flashing firmware (this may take a minute)…");
+        log("🚀 Flashing firmware…");
         await loader.flashData(firmware, 0x10000, true);
 
-        log("✅ Flash complete! Rebooting device…");
+        log("✅ Flash complete. Rebooting…");
         await loader.hardReset();
         await port.close();
-        log("🎉 Done! RoastLink TWO successfully updated.");
+
+        log("🎉 Done! Your RoastLink TWO is now updated.");
       } catch (err) {
         console.error(err);
         log("❌ Error: " + err.message);
