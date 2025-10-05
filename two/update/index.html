@@ -5,12 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>RoastLink TWO Web Flasher</title>
 <style>
-  body { font-family:sans-serif; background:#0e0e0e; color:#eee; text-align:center; padding:40px; }
-  button { font-size:1.1em; padding:10px 20px; border:none; border-radius:8px; margin:10px;
-           background:#ff7b00; color:#fff; cursor:pointer; }
+  body {
+    font-family:sans-serif;
+    background:#0e0e0e;
+    color:#eee;
+    text-align:center;
+    padding:40px;
+  }
+  button {
+    font-size:1.1em;
+    padding:10px 20px;
+    border:none;
+    border-radius:8px;
+    margin:10px;
+    background:#ff7b00;
+    color:#fff;
+    cursor:pointer;
+  }
   button:disabled { background:#555; cursor:not-allowed; }
-  #log { text-align:left; background:#181818; color:#cfcfcf; margin-top:25px; padding:15px;
-         border-radius:8px; max-width:700px; margin-inline:auto; white-space:pre-line; }
+  #log {
+    text-align:left;
+    background:#181818;
+    color:#cfcfcf;
+    margin-top:25px;
+    padding:15px;
+    border-radius:8px;
+    max-width:700px;
+    margin-inline:auto;
+    white-space:pre-line;
+  }
   select { font-size:1em; padding:8px; margin:10px; border-radius:6px; }
 </style>
 </head>
@@ -19,12 +42,13 @@
   <p>Reflash your RoastLink TWO (ESP32-S3) directly in your browser.</p>
 
   <select id="firmware">
-    <option value="https://ota.roastlink.com/two/roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
+    <option value="roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
   </select>
   <button id="flashBtn">Connect & Flash</button>
+
   <div id="log">Waiting...</div>
 
-  <!-- Early serial check -->
+  <!-- Early Web Serial support check -->
   <script>
     if (!("serial" in navigator)) {
       document.body.innerHTML = `
@@ -34,13 +58,17 @@
     }
   </script>
 
-  <!-- ✅ LOCAL esptool bundle -->
+  <!-- Local esptool bundle (same folder as this file) -->
   <script type="module">
-    import { ESPLoader } from "./bundle.js";   // same folder as index.html
+    import { ESPLoader } from "./bundle.js";
 
     const logBox = document.getElementById("log");
     const flashBtn = document.getElementById("flashBtn");
-    const log = msg => { console.log(msg); logBox.textContent += msg + "\n"; logBox.scrollTop = logBox.scrollHeight; };
+    const log = msg => {
+      console.log(msg);
+      logBox.textContent += msg + "\n";
+      logBox.scrollTop = logBox.scrollHeight;
+    };
 
     async function fetchStub() {
       const resp = await fetch("esp32s3.json");
@@ -51,24 +79,33 @@
     flashBtn.onclick = async () => {
       try {
         const firmwareUrl = document.getElementById("firmware").value;
-        log(`🔌 Requesting device…`);
+        log("🔌 Requesting device…");
         const port = await navigator.serial.requestPort();
         await port.open({ baudRate: 921600 });
 
-log("⚙️ Connecting to ESP32-S3…");
-const loader = new ESPLoader(port);
-await loader.initialize();
+        log("⚙️ Connecting to ESP32-S3…");
+        const loader = new ESPLoader(port);
+        await loader.initialize();
 
-let chipName = "Unknown chip";
-try {
-  const info = await loader.chip.get_info(); // older API (Meshtastic build)
-  chipName = info?.chip ?? "ESP32-S3";
-} catch (e) {
-  log("⚠️ Using fallback getChipDescription()");
-  chipName = loader.chipName || loader.getChipDescription?.() || "ESP32-S3";
-}
+        // ---- Robust chip info detection ----
+        let chipName = "ESP32-S3";
+        try {
+          if (loader.getChipInfo) {
+            const info = await loader.getChipInfo();
+            chipName = info?.name || "ESP32-S3";
+          } else if (loader.chip && loader.chip.get_info) {
+            const info = await loader.chip.get_info();
+            chipName = info?.chip || "ESP32-S3";
+          } else if (loader.getChipDescription) {
+            chipName = loader.getChipDescription();
+          } else {
+            log("⚠️ Unknown API version, using default chip name");
+          }
+        } catch (e) {
+          log("⚠️ Chip info unavailable: " + e.message);
+        }
 
-log(`✅ Connected: ${chipName}`);
+        log(`✅ Connected: ${chipName}`);
 
         log("📦 Uploading stub…");
         const stub = await fetchStub();
