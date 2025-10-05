@@ -51,15 +51,13 @@
   <p>Reflash your RoastLink TWO (ESP32-S3) directly in your browser.</p>
 
   <select id="firmware">
-    <option value="https://ota.roastlink.com/two/roastlink-two-v0.9.4.bin">
-      v0.9.4 (latest)
-    </option>
+    <option value="roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
   </select>
   <button id="flashBtn">Connect & Flash</button>
 
   <div id="log">Waiting...</div>
 
-  <!-- ✅ Make pako globally available -->
+  <!-- ✅ Load pako (compression lib) -->
   <script type="module">
     import * as pako from "https://cdn.jsdelivr.net/npm/pako@2.1.0/+esm";
     window.pako = pako;
@@ -79,19 +77,21 @@
       logBox.scrollTop = logBox.scrollHeight;
     };
 
-    // Early browser support check
+    // --- Check for browser support ---
     if (!("serial" in navigator)) {
       document.body.innerHTML = `
         <h2 style="color:#ff5252;">⚠️ Web Serial not available</h2>
         <p>This page must be opened in <b>Google Chrome</b> or <b>Microsoft Edge</b><br>
-        (and served over <b>HTTPS</b> or <b>localhost</b>).</p>`;
+        (and over <b>HTTPS</b> or <b>localhost</b>).</p>`;
       throw new Error("Web Serial not supported");
     }
 
+    // --- Main flashing function ---
     flashBtn.onclick = async () => {
       try {
         flashBtn.disabled = true;
         const firmwareUrl = document.getElementById("firmware").value;
+
         log("🔌 Requesting device access …");
         const port = await navigator.serial.requestPort();
         const transport = new Transport(port);
@@ -101,27 +101,32 @@
         const loader = new ESPLoader(transport);
         await loader.initialize();
 
-        // Try both modern and legacy chip info APIs
+        // --- Determine chip type ---
         let chipName = "ESP32-S3";
         try {
-          chipName = loader.chip?.get_chip_description?.() ||
-                     loader.getChipDescription?.() ||
-                     "ESP32-S3";
+          chipName =
+            loader.chip?.get_chip_description?.() ||
+            loader.getChipDescription?.() ||
+            "ESP32-S3";
         } catch {
-          log("⚠️ Falling back to chip name default (ESP32-S3)");
+          log("⚠️ Falling back to default chip name");
         }
         log(`✅ Connected to ${chipName}`);
 
+        // --- Load stub ---
         log("📦 Loading stub …");
         const stub = await getStubJsonByChipName(chipName);
         await loader.loadStub(stub);
         log("🧠 Stub loaded successfully");
 
+        // --- Fetch firmware ---
         log(`⬇️ Downloading firmware from ${firmwareUrl} …`);
         const resp = await fetch(firmwareUrl);
+        if (!resp.ok) throw new Error("Failed to fetch firmware");
         const firmware = new Uint8Array(await resp.arrayBuffer());
         log(`Firmware size: ${firmware.length} bytes`);
 
+        // --- Flash firmware ---
         log("⚡ Erasing flash …");
         await loader.eraseFlash();
 
