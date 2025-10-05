@@ -49,7 +49,7 @@
   <p>Reflash your RoastLink TWO (ESP32-S3) directly in your browser.</p>
 
   <select id="firmware">
-    <option value="roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
+    <option value="https://ota.roastlink.com/two/roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
   </select>
   <button id="flashBtn">Connect & Flash</button>
 
@@ -65,7 +65,7 @@
     }
   </script>
 
-  <!-- Local esptool bundle (Meshtastic-compatible) -->
+  <!-- Local esptool bundle -->
   <script type="module">
     import { ESPLoader } from "./bundle.js";
 
@@ -93,47 +93,30 @@
         log("⚙️ Connecting to ESP32-S3…");
         const loader = new ESPLoader(port);
 
-        // Initialize & detect chip info safely
-        let chipName = "ESP32-S3";
-        let initResult = null;
-        try {
-          initResult = await loader.initialize();
-          if (initResult?.chipName || initResult?.name) {
-            chipName = initResult.chipName || initResult.name;
-          } else if (loader.getChipDescription) {
-            chipName = loader.getChipDescription();
-          } else {
-            log("⚠️ Chip info not provided by this bundle");
-          }
-        } catch (e) {
-          log("⚠️ Could not query chip info: " + e.message);
-        }
-
+        await loader.initialize();
+        const chipName = loader.chipName || loader.get_chip_description?.() || "ESP32-S3";
         log(`✅ Connected: ${chipName}`);
 
-        // Upload stub
         log("📦 Uploading stub…");
         const stub = await fetchStub();
         await loader.loadStub(stub);
         log("🧠 Stub loaded successfully");
 
-        // Fetch firmware
         log(`⬇️ Downloading firmware from ${firmwareUrl}`);
         const resp = await fetch(firmwareUrl);
         const firmware = new Uint8Array(await resp.arrayBuffer());
         log(`Firmware size: ${firmware.length.toLocaleString()} bytes`);
 
-        // Erase & flash
         log("⚡ Erasing flash…");
         await loader.eraseFlash();
 
         log("🚀 Flashing firmware…");
         await loader.flashData(firmware, 0x10000, true);
 
-        // Done
         log("✅ Flash complete. Rebooting…");
         await loader.hardReset();
         await port.close();
+
         log("🎉 Done! Your RoastLink TWO is now updated.");
       } catch (err) {
         console.error(err);
