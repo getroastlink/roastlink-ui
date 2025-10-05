@@ -11,66 +11,15 @@ import { loadFirmwareImage } from "./image/index.js";
  * @returns {ROM} The chip ROM class related to given magic hex number.
  */
 async function magic2Chip(magic) {
-    switch (magic) {
-        case 0x00f01d83: {
-            const { ESP32ROM } = await import("./targets/esp32.js");
-            return new ESP32ROM();
-        }
-        case 0xc21e06f:
-        case 0x6f51306f:
-        case 0x7c41a06f: {
-            const { ESP32C2ROM } = await import("./targets/esp32c2.js");
-            return new ESP32C2ROM();
-        }
-        case 0x6921506f:
-        case 0x1b31506f:
-        case 0x4881606f:
-        case 0x4361606f: {
-            const { ESP32C3ROM } = await import("./targets/esp32c3.js");
-            return new ESP32C3ROM();
-        }
-        case 0x2ce0806f: {
-            const { ESP32C6ROM } = await import("./targets/esp32c6.js");
-            return new ESP32C6ROM();
-        }
-        case 0x2421606f:
-        case 0x33f0206f:
-        case 0x4f81606f: {
-            const { ESP32C61ROM } = await import("./targets/esp32c61.js");
-            return new ESP32C61ROM();
-        }
-        case 0x1101406f:
-        case 0x63e1406f:
-        case 0x5fd1406f: {
-            const { ESP32C5ROM } = await import("./targets/esp32c5.js");
-            return new ESP32C5ROM();
-        }
-        case 0xd7b73e80:
-        case 0x97e30068: {
-            const { ESP32H2ROM } = await import("./targets/esp32h2.js");
-            return new ESP32H2ROM();
-        }
-        case 0x09: {
-            const { ESP32S3ROM } = await import("./targets/esp32s3.js");
-            return new ESP32S3ROM();
-        }
-        case 0x000007c6: {
-            const { ESP32S2ROM } = await import("./targets/esp32s2.js");
-            return new ESP32S2ROM();
-        }
-        case 0xfff0c101: {
-            const { ESP8266ROM } = await import("./targets/esp8266.js");
-            return new ESP8266ROM();
-        }
-        case 0x0:
-        case 0x0addbad0:
-        case 0x7039ad9: {
-            const { ESP32P4ROM } = await import("./targets/esp32p4.js");
-            return new ESP32P4ROM();
-        }
-        default:
-            return null;
-    }
+  // Only recognize ESP32-S3
+  if (magic === 0x09) {
+    const { ESP32S3ROM } = await import("./targets/esp32s3.js");
+    return new ESP32S3ROM();
+  }
+
+  // Fallback (unknown magic)
+  console.warn(`[magic2Chip] Unknown magic value: 0x${magic.toString(16)}`);
+  return null;
 }
 export class ESPLoader {
     /**
