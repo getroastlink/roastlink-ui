@@ -57,17 +57,16 @@
 
   <div id="log">Waiting...</div>
 
-  <!-- ✅ Load pako (compression lib) -->
-  <script type="module">
-    import * as pako from "https://cdn.jsdelivr.net/npm/pako@2.1.0/+esm";
-    window.pako = pako;
-  </script>
+  <!-- ✅ Load local Pako (compression lib) -->
+  <script src="./pako.min.js"></script>
 
   <!-- ✅ Main flasher logic -->
   <script type="module">
     import { ESPLoader } from "./esploader.js";
     import { Transport } from "./webserial.js";
     import { getStubJsonByChipName } from "./stubFlasher.js";
+
+    window.pako = window.pako || {}; // ensure pako is globally available
 
     const logBox = document.getElementById("log");
     const flashBtn = document.getElementById("flashBtn");
