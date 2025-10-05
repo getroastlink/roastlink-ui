@@ -83,27 +83,35 @@
         const port = await navigator.serial.requestPort();
         await port.open({ baudRate: 921600 });
 
-        log("⚙️ Connecting to ESP32-S3…");
-        const loader = new ESPLoader(port);
-        await loader.initialize();
+       log("⚙️ Connecting to ESP32-S3…");
+const loader = new ESPLoader(port);
+const initResult = await loader.initialize();
 
-        // ---- Robust chip info detection ----
-        let chipName = "ESP32-S3";
-        try {
-          if (loader.getChipInfo) {
-            const info = await loader.getChipInfo();
-            chipName = info?.name || "ESP32-S3";
-          } else if (loader.chip && loader.chip.get_info) {
-            const info = await loader.chip.get_info();
-            chipName = info?.chip || "ESP32-S3";
-          } else if (loader.getChipDescription) {
-            chipName = loader.getChipDescription();
-          } else {
-            log("⚠️ Unknown API version, using default chip name");
-          }
-        } catch (e) {
-          log("⚠️ Chip info unavailable: " + e.message);
-        }
+let chipName = "ESP32-S3";
+try {
+  // Modern versions return info from initialize()
+  if (initResult && (initResult.chipName || initResult.name)) {
+    chipName = initResult.chipName || initResult.name;
+  }
+  // Check known methods for chip info
+  else if (loader.getChipInfo) {
+    const info = await loader.getChipInfo();
+    chipName = info?.name || "ESP32-S3";
+  }
+  else if (loader.chip && loader.chip.get_info) {
+    const info = await loader.chip.get_info();
+    chipName = info?.chip || "ESP32-S3";
+  }
+  else if (loader.getChipDescription) {
+    chipName = loader.getChipDescription();
+  } else {
+    log("⚠️ Chip info method not found — assuming ESP32-S3");
+  }
+} catch (e) {
+  log("⚠️ Could not get chip info: " + e.message);
+}
+
+log(`✅ Connected: ${chipName}`);
 
         log(`✅ Connected: ${chipName}`);
 
