@@ -12,6 +12,7 @@
     text-align:center;
     padding:40px;
   }
+  h1 { margin-bottom:10px; }
   button {
     font-size:1.1em;
     padding:10px 20px;
@@ -33,8 +34,14 @@
     max-width:700px;
     margin-inline:auto;
     white-space:pre-line;
+    font-size:0.95em;
   }
-  select { font-size:1em; padding:8px; margin:10px; border-radius:6px; }
+  select {
+    font-size:1em;
+    padding:8px;
+    margin:10px;
+    border-radius:6px;
+  }
 </style>
 </head>
 <body>
@@ -48,7 +55,7 @@
 
   <div id="log">Waiting...</div>
 
-  <!-- Early Web Serial support check -->
+  <!-- Early Web Serial check -->
   <script>
     if (!("serial" in navigator)) {
       document.body.innerHTML = `
@@ -58,7 +65,7 @@
     }
   </script>
 
-  <!-- Local esptool bundle (same folder as this file) -->
+  <!-- Local esptool bundle (Meshtastic-compatible) -->
   <script type="module">
     import { ESPLoader } from "./bundle.js";
 
@@ -83,58 +90,50 @@
         const port = await navigator.serial.requestPort();
         await port.open({ baudRate: 921600 });
 
-       log("⚙️ Connecting to ESP32-S3…");
-const loader = new ESPLoader(port);
-const initResult = await loader.initialize();
+        log("⚙️ Connecting to ESP32-S3…");
+        const loader = new ESPLoader(port);
 
-let chipName = "ESP32-S3";
-try {
-  // Modern versions return info from initialize()
-  if (initResult && (initResult.chipName || initResult.name)) {
-    chipName = initResult.chipName || initResult.name;
-  }
-  // Check known methods for chip info
-  else if (loader.getChipInfo) {
-    const info = await loader.getChipInfo();
-    chipName = info?.name || "ESP32-S3";
-  }
-  else if (loader.chip && loader.chip.get_info) {
-    const info = await loader.chip.get_info();
-    chipName = info?.chip || "ESP32-S3";
-  }
-  else if (loader.getChipDescription) {
-    chipName = loader.getChipDescription();
-  } else {
-    log("⚠️ Chip info method not found — assuming ESP32-S3");
-  }
-} catch (e) {
-  log("⚠️ Could not get chip info: " + e.message);
-}
-
-log(`✅ Connected: ${chipName}`);
+        // Initialize & detect chip info safely
+        let chipName = "ESP32-S3";
+        let initResult = null;
+        try {
+          initResult = await loader.initialize();
+          if (initResult?.chipName || initResult?.name) {
+            chipName = initResult.chipName || initResult.name;
+          } else if (loader.getChipDescription) {
+            chipName = loader.getChipDescription();
+          } else {
+            log("⚠️ Chip info not provided by this bundle");
+          }
+        } catch (e) {
+          log("⚠️ Could not query chip info: " + e.message);
+        }
 
         log(`✅ Connected: ${chipName}`);
 
+        // Upload stub
         log("📦 Uploading stub…");
         const stub = await fetchStub();
         await loader.loadStub(stub);
         log("🧠 Stub loaded successfully");
 
+        // Fetch firmware
         log(`⬇️ Downloading firmware from ${firmwareUrl}`);
         const resp = await fetch(firmwareUrl);
         const firmware = new Uint8Array(await resp.arrayBuffer());
-        log(`Firmware size: ${firmware.length} bytes`);
+        log(`Firmware size: ${firmware.length.toLocaleString()} bytes`);
 
+        // Erase & flash
         log("⚡ Erasing flash…");
         await loader.eraseFlash();
 
         log("🚀 Flashing firmware…");
         await loader.flashData(firmware, 0x10000, true);
 
+        // Done
         log("✅ Flash complete. Rebooting…");
         await loader.hardReset();
         await port.close();
-
         log("🎉 Done! Your RoastLink TWO is now updated.");
       } catch (err) {
         console.error(err);
