@@ -19,22 +19,26 @@
   <p>Reflash your RoastLink TWO (ESP32-S3) directly in your browser.</p>
 
   <select id="firmware">
-    <option value="https://ota.roastlink.com/two/roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
+    <option value="roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
   </select>
   <button id="flashBtn">Connect & Flash</button>
   <div id="log">Waiting...</div>
 
-  <script type="module">
+  <!-- Early serial check -->
+  <script>
     if (!("serial" in navigator)) {
-  document.body.innerHTML = `
-    <h2 style="color:#ff5252;">⚠️ Web Serial not available</h2>
-    <p>This page must be opened in <b>Google Chrome</b> or <b>Microsoft Edge</b><br>
-    (and over <b>HTTPS</b> or <b>localhost</b>).</p>`;
-  throw new Error("Web Serial not supported");
-}
+      document.body.innerHTML = `
+        <h2 style="color:#ff5252;">⚠️ Web Serial not available</h2>
+        <p>This page must be opened in <b>Google Chrome</b> or <b>Microsoft Edge</b><br>
+        (and over <b>HTTPS</b> or <b>localhost</b>).</p>`;
+    }
+  </script>
+
+  <script type="module">
     import { ESPLoader } from "https://unpkg.com/esptool-js@0.5.7/dist/web/index.min.js";
 
     const logBox = document.getElementById("log");
+    const flashBtn = document.getElementById("flashBtn");
     const log = msg => { console.log(msg); logBox.textContent += msg + "\n"; logBox.scrollTop = logBox.scrollHeight; };
 
     async function fetchStub() {
@@ -43,13 +47,8 @@
       return await resp.json();
     }
 
-    document.getElementById("flashBtn").onclick = async () => {
+    flashBtn.onclick = async () => {
       try {
-        if (!("serial" in navigator)) {
-          alert("Your browser doesn't support Web Serial. Use Chrome, Edge, or Arc.");
-          return;
-        }
-
         const firmwareUrl = document.getElementById("firmware").value;
         log(`🔌 Requesting device…`);
         const port = await navigator.serial.requestPort();
