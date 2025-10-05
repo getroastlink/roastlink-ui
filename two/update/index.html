@@ -3,136 +3,54 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>🔥 RoastLink TWO Web Flasher</title>
+<title>RoastLink TWO Web Flasher</title>
 <style>
-  body {
-    font-family: system-ui, sans-serif;
-    background: #0e0e0e;
-    color: #eee;
-    text-align: center;
-    padding: 40px;
-  }
-  button {
-    font-size: 1.1em;
-    padding: 10px 24px;
-    border: none;
-    border-radius: 8px;
-    margin: 12px;
-    background: #ff7b00;
-    color: #fff;
-    cursor: pointer;
-  }
-  button:disabled {
-    background: #444;
-    cursor: not-allowed;
-  }
-  #log {
-    text-align: left;
-    background: #181818;
-    color: #ccc;
-    margin-top: 25px;
-    padding: 15px;
-    border-radius: 8px;
-    max-width: 720px;
-    margin-inline: auto;
-    white-space: pre-line;
-    font-family: ui-monospace, monospace;
-  }
-  select {
-    font-size: 1em;
-    padding: 8px;
-    margin: 10px;
-    border-radius: 6px;
-  }
+  body { font-family:sans-serif; background:#0e0e0e; color:#eee; text-align:center; padding:40px; }
+  button { font-size:1.1em; padding:10px 20px; border:none; border-radius:8px; margin:10px;
+           background:#ff7b00; color:#fff; cursor:pointer; }
+  button:disabled { background:#555; cursor:not-allowed; }
+  #log { text-align:left; background:#181818; color:#cfcfcf; margin-top:25px; padding:15px;
+         border-radius:8px; max-width:700px; margin-inline:auto; white-space:pre-line; }
 </style>
 </head>
 <body>
   <h1>🔥 RoastLink TWO Web Flasher</h1>
   <p>Reflash your RoastLink TWO (ESP32-S3) directly in your browser.</p>
 
-  <select id="firmware">
-    <option value="roastlink-two-v0.9.4.bin">v0.9.4 (latest)</option>
-  </select>
   <button id="flashBtn">Connect & Flash</button>
-
   <div id="log">Waiting...</div>
 
-  <!-- ✅ Load local Pako (compression lib) -->
-  <script src="./pako.min.js"></script>
-
-  <!-- ✅ Main flasher logic -->
   <script type="module">
     import { ESPLoader } from "./esploader.js";
-    import { Transport } from "./webserial.js";
-    import { getStubJsonByChipName } from "./stubFlasher.js";
-
-    window.pako = window.pako || {}; // ensure pako is globally available
 
     const logBox = document.getElementById("log");
     const flashBtn = document.getElementById("flashBtn");
-    const log = (msg) => {
-      console.log(msg);
-      logBox.textContent += msg + "\n";
-      logBox.scrollTop = logBox.scrollHeight;
-    };
+    const log = msg => { console.log(msg); logBox.textContent += msg + "\n"; logBox.scrollTop = logBox.scrollHeight; };
 
-    // --- Check for browser support ---
-    if (!("serial" in navigator)) {
-      document.body.innerHTML = `
-        <h2 style="color:#ff5252;">⚠️ Web Serial not available</h2>
-        <p>This page must be opened in <b>Google Chrome</b> or <b>Microsoft Edge</b><br>
-        (and over <b>HTTPS</b> or <b>localhost</b>).</p>`;
-      throw new Error("Web Serial not supported");
-    }
-
-    // --- Main flashing function ---
     flashBtn.onclick = async () => {
       try {
-        flashBtn.disabled = true;
-        const firmwareUrl = document.getElementById("firmware").value;
-
-        log("🔌 Requesting device access …");
+        const firmwareUrl = "https://ota.roastlink.com/two/roastlink-two-v0.9.4.bin";
+        log(`🔌 Requesting device…`);
         const port = await navigator.serial.requestPort();
-        const transport = new Transport(port);
         await port.open({ baudRate: 921600 });
 
-        log("⚙️ Connecting to ESP32-S3 …");
-        const loader = new ESPLoader(transport);
+        log("⚙️ Connecting to ESP32-S3…");
+        const loader = new ESPLoader(port);
         await loader.initialize();
+        log(`✅ Connected to ESP32-S3`);
 
-        // --- Determine chip type ---
-        let chipName = "ESP32-S3";
-        try {
-          chipName =
-            loader.chip?.get_chip_description?.() ||
-            loader.getChipDescription?.() ||
-            "ESP32-S3";
-        } catch {
-          log("⚠️ Falling back to default chip name");
-        }
-        log(`✅ Connected to ${chipName}`);
-
-        // --- Load stub ---
-        log("📦 Loading stub …");
-        const stub = await getStubJsonByChipName(chipName);
-        await loader.loadStub(stub);
-        log("🧠 Stub loaded successfully");
-
-        // --- Fetch firmware ---
-        log(`⬇️ Downloading firmware from ${firmwareUrl} …`);
+        log(`⬇️ Downloading firmware…`);
         const resp = await fetch(firmwareUrl);
-        if (!resp.ok) throw new Error("Failed to fetch firmware");
         const firmware = new Uint8Array(await resp.arrayBuffer());
         log(`Firmware size: ${firmware.length} bytes`);
 
-        // --- Flash firmware ---
-        log("⚡ Erasing flash …");
+        log("⚡ Erasing flash…");
         await loader.eraseFlash();
 
-        log("🚀 Flashing firmware …");
+        log("🚀 Flashing firmware…");
         await loader.flashData(firmware, 0x10000, true);
 
-        log("✅ Flash complete — rebooting device …");
+        log("✅ Flash complete. Rebooting…");
         await loader.hardReset();
         await port.close();
 
@@ -140,8 +58,6 @@
       } catch (err) {
         console.error(err);
         log("❌ Error: " + err.message);
-      } finally {
-        flashBtn.disabled = false;
       }
     };
   </script>
