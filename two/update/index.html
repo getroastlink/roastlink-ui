@@ -1,63 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>RoastLink TWO Web Flasher</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="esptool.min.js"></script>
-<style>
-body { font-family: sans-serif; background:#111; color:#eee; text-align:center; padding:40px; }
-button { font-size: 1.2em; padding:10px 25px; margin:10px; cursor:pointer; border-radius:8px; }
-#log { text-align:left; background:#222; padding:15px; margin-top:20px; white-space:pre-line; border-radius:6px; }
-</style>
+  <meta charset="UTF-8">
+  <title>RoastLink TWO Web Flasher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; background:#111; color:#eee; text-align:center; padding:40px; }
+    button { font-size: 1.2em; padding:10px 25px; margin:10px; cursor:pointer; border-radius:8px; }
+    #log { text-align:left; background:#222; padding:15px; margin-top:20px; white-space:pre-line; border-radius:6px; max-width:600px; margin-inline:auto; }
+  </style>
 </head>
 <body>
-<h1>🔥 RoastLink TWO Web Flasher</h1>
-<p>Flash firmware directly to your RoastLink device via USB-C.</p>
-<button id="connect">Connect & Flash</button>
-<div id="log">Waiting...</div>
+  <h1>🔥 RoastLink TWO Web Flasher</h1>
+  <p>Flash firmware directly to your RoastLink device via USB-C.</p>
+  <button id="connect">Connect & Flash</button>
+  <div id="log">Waiting...</div>
 
-<script>
-const logBox = document.getElementById('log');
-function log(msg) {
-  console.log(msg);
-  logBox.textContent += msg + "\n";
-}
+  <script type="module">
+    import { ESPLoader } from "https://unpkg.com/esptool-js@0.5.7/dist/web/index.min.js";
 
-document.getElementById('connect').onclick = async () => {
-  try {
-    log("🔌 Requesting device...");
-    const port = await navigator.serial.requestPort();
-    const transport = new Transport(port);
-    await port.open({ baudRate: 921600 });
-    log("⚙️  Connecting to ESP32-S3...");
+    const logBox = document.getElementById('log');
+    const log = msg => { console.log(msg); logBox.textContent += msg + "\n"; };
 
-    const chip = new ESPTool(transport);
-    await chip.initialize();
-    const info = await chip.runStub();
-    log(`✅ Connected: ${info.chipName}, MAC: ${info.mac}`);
+    document.getElementById('connect').onclick = async () => {
+      try {
+        log("🔌 Requesting device...");
+        const port = await navigator.serial.requestPort();
+        await port.open({ baudRate: 921600 });
 
-    const firmwareUrl = "https://ota.roastlink.com/two/roastlink-two-v0.9.3.bin";
-    const resp = await fetch(firmwareUrl);
-    const firmware = new Uint8Array(await resp.arrayBuffer());
-    log(`⬇️  Firmware loaded (${firmware.length} bytes)`);
+        log("⚙️ Connecting to ESP32-S3...");
+        const loader = new ESPLoader(port);
+        await loader.initialize();
+        const info = await loader.getChipInfo();
+        log(`✅ Connected: ${info.name}`);
 
-    log("⚙️ Erasing flash...");
-    await chip.flashErase();
+        const firmwareUrl = "https://ota.roastlink.com/two/roastlink-two-v0.9.3.bin";
+        const resp = await fetch(firmwareUrl);
+        const firmware = new Uint8Array(await resp.arrayBuffer());
+        log(`⬇️ Firmware loaded (${firmware.length} bytes)`);
 
-    log("⚡ Flashing...");
-    await chip.flashData(firmware, 0x10000, true); // true = compress
+        log("⚡ Flashing...");
+        await loader.flashData(firmware, 0x10000, true); // true = compress
 
-    log("✅ Flash complete. Rebooting...");
-    await chip.hardReset();
-    log("🎉 Done! Device rebooting into new firmware.");
+        log("✅ Flash complete. Rebooting...");
+        await loader.hardReset();
 
-    await transport.disconnect();
-  } catch (err) {
-    log("❌ Error: " + err.message);
-    console.error(err);
-  }
-};
-</script>
+        log("🎉 Done! Device rebooting into new firmware.");
+        await port.close();
+      } catch (err) {
+        log("❌ Error: " + err.message);
+        console.error(err);
+      }
+    };
+  </script>
 </body>
 </html>
