@@ -1,0 +1,15 @@
+{
+  "name": "RoastLink TWO",
+  "version": "v0.9.4",
+  "build": {
+    "chipFamily": "ESP32-S3"
+  },
+  "binaries": [
+    {
+      "path": "roastlink-two-v0.9.4.bin",
+      "offset": 65536
+    }
+  ],
+  "new_install_prompt_erase": false,
+  "release_notes": "Flashes RoastLink TWO (ESP32-S3) firmware at 0x10000."
+}
