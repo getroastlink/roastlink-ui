@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RoastLink TWO Web Flasher</title>
+<style>
+  body {
+    background: #0e0e0e;
+    color: #eee;
+    font-family: sans-serif;
+    text-align: center;
+    padding: 40px;
+  }
+  h1 { margin-bottom: 10px; }
+  p  { color: #ccc; }
+  button {
+    background: #ff7b00;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 26px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  button:hover { background: #ff961f; }
+  #log {
+    background: #181818;
+    color: #cfcfcf;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 30px auto;
+    max-width: 720px;
+    text-align: left;
+    white-space: pre-line;
+  }
+</style>
+</head>
+<body>
+
+<h1>🔥 RoastLink TWO Web Flasher</h1>
+<p>Reflash your RoastLink TWO (ESP32-S3) directly in your browser using WebSerial.</p>
+
+<button id="flashBtn">Connect & Flash</button>
+<div id="log">Waiting...</div>
+
+<script type="module">
+  import { install } from "https://unpkg.com/esp-web-tools@9.2.5/dist/web/install-button.js";
+
+  const logBox = document.getElementById("log");
+  function log(msg) {
+    console.log(msg);
+    logBox.textContent += msg + "\n";
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+
+  document.getElementById("flashBtn").onclick = async () => {
+    try {
+      log("🔌 Connecting to RoastLink TWO...");
+      const manifestURL = "./manifest.json"; // local manifest in same folder
+      const port = await navigator.serial.requestPort();
+
+      log("⚙️  Opening port...");
+      await port.open({ baudRate: 921600 });
+
+      log("🚀 Launching flasher...");
+      const flasher = new install({
+        port,
+        manifest: manifestURL,
+        eraseFirst: false,
+        enableDebug: true,
+        log: (msg) => log(msg),
+      });
+
+      await flasher.install();
+      log("✅ Flash complete! Device rebooting...");
+      await port.close();
+    } catch (err) {
+      console.error(err);
+      log("❌ Error: " + err.message);
+    }
+  };
+</script>
+</body>
+</html>
