@@ -1,4 +1,6 @@
-import atob from "atob-lite";
+// Native browser functions for base64
+const atobLite = (str) => atobLite(str);
+const btoaLite = (str) => btoaLite(str);
 /**
  * Import flash stub json for the given chip name.
  * @param {string} chipName Name of chip to obtain flasher stub
@@ -61,7 +63,7 @@ export async function getStubJsonByChipName(chipName) {
  * @returns {Uint8Array} Decoded Uint8Array
  */
 export function decodeBase64Data(dataStr) {
-    const decoded = atob(dataStr);
+    const decoded = atobLite(dataStr);
     const chardata = decoded.split("").map(function (x) {
         return x.charCodeAt(0);
     });
