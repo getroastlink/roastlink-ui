@@ -3,7 +3,7 @@
   "version": "v0.9.4",
   "builds": [
     {
-      "chipFamily": "ESP32-S3",
+      "chipFamily": "ESP32S3",
       "parts": [
         {
           "path": "roastlink-two-v0.9.4.bin",
