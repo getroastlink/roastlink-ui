@@ -1,0 +1,37 @@
+name: Deploy GitHub Pages
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+# Important: auto-cancel in-progress runs to prevent deployment conflicts
+concurrency:
+  group: "pages"
+  cancel-in-progress: true  # ← Changed from false to true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      # If your site is built, add your build step here (npm/yarn/etc.)
+      # - run: npm ci && npm run build
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./        # <-- change to your built output folder if you have one (e.g., "dist")
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
