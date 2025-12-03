@@ -1,0 +1,18 @@
+# Ignore everything by default
+*
+
+# But track these deployment folders and their contents
+!core/
+!core/*.bin
+!core/*.json
+
+!two/
+!two/*.bin
+!two/*.json
+
+!twoplus/
+!twoplus/*.bin
+!twoplus/*.json
+
+# Also track .gitignore itself
+!.gitignore
