@@ -1,10 +1,10 @@
 {
-  "name": "RoastLink ONE Universal Firmware",
-  "version": "1.0.0",
+  "name": "RoastLink ONE",
+  "version": "0.1.0",
   "builds": [{
     "chipFamily": "ESP32-C6",
     "parts": [{
-      "path": "c6-unified-new.bin",
+      "path": "roastlink-one-v0.1.0-merged.bin",
       "offset": 0
     }]
   }]
