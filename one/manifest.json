@@ -1,10 +1,10 @@
 {
   "name": "RoastLink ONE",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "builds": [{
     "chipFamily": "ESP32-C6",
     "parts": [{
-      "path": "roastlink-one-v0.1.0-merged.bin",
+      "path": "roastlink-one-v0.1.1-merged.bin",
       "offset": 0
     }]
   }]
