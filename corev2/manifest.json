@@ -1,5 +1,5 @@
 {
-  "version": "",
-  "bin": "https://ota.roastlink.com/corev2/roastlink-corev2-v.bin",
+  "version": "1.0.3",
+  "bin": "https://ota.roastlink.com/corev2/roastlink-corev2-v1.0.3.bin",
   "sha256": ""
 }
