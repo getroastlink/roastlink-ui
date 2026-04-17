@@ -18,5 +18,9 @@
 !corev2/*.bin
 !corev2/*.json
 
+!one/
+!one/*.bin
+!one/*.json
+
 # Also track .gitignore itself
 !.gitignore
