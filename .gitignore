@@ -22,5 +22,12 @@
 !one/*.bin
 !one/*.json
 
+!coredev/
+!coredev/*.bin
+!coredev/*.json
+
 # Also track .gitignore itself
 !.gitignore
+
+# Explicitly exclude secrets (already covered by * above, listed for clarity)
+include/secrets.h
