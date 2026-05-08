@@ -26,6 +26,10 @@
 !coredev/*.bin
 !coredev/*.json
 
+!twoplusv2/
+!twoplusv2/*.bin
+!twoplusv2/*.json
+
 # Also track .gitignore itself
 !.gitignore
 
