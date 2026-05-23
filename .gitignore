@@ -30,6 +30,10 @@
 !twoplusv2/*.bin
 !twoplusv2/*.json
 
+!corev3/
+!corev3/*.bin
+!corev3/*.json
+
 # Also track .gitignore itself
 !.gitignore
 
