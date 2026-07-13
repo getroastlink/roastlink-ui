@@ -30,6 +30,10 @@
 !twoplusv2/*.bin
 !twoplusv2/*.json
 
+!twoplusv3/
+!twoplusv3/*.bin
+!twoplusv3/*.json
+
 !corev3/
 !corev3/*.bin
 !corev3/*.json
