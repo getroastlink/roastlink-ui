@@ -26,6 +26,14 @@
 !coredev/*.bin
 !coredev/*.json
 
+!coredevv2/
+!coredevv2/*.bin
+!coredevv2/*.json
+
+!coredev-remote/
+!coredev-remote/*.bin
+!coredev-remote/*.json
+
 !twoplusv2/
 !twoplusv2/*.bin
 !twoplusv2/*.json
