@@ -34,6 +34,10 @@
 !corev3/*.bin
 !corev3/*.json
 
+# Public BLE integration documentation
+!API/
+!API/*.md
+
 # Also track .gitignore itself
 !.gitignore
 
