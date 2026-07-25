@@ -1,5 +1,7 @@
 {
-  "version": "1.1.1",
-  "bin": "https://ota.roastlink.com/twoplus/roastlink-twoplus-v1.1.1.bin",
-  "sha256": ""
+  "version": "1.1.2",
+  "bin": "https://ota.roastlink.com/twoplus/roastlink-twoplus-v1.1.2.bin",
+  "sha256": "",
+  "notes": "PID settings show the exact hardware model. Release notes now appear here before installation.",
+  "changelog_url": "https://app.notion.com/p/3a7d045abe438142b616d3e11b25a1ec"
 }
