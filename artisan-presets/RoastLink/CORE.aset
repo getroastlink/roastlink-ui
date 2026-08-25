@@ -1,0 +1,80 @@
+[General]
+AmbientHumiditySource=6
+AmbientTempSource=5
+Delay=1000
+roastertype_setup=RoastLink CORE
+
+[Device]
+id=111
+
+[DefaultButtons]
+buttonactions=21, 21, 21, 21, 21, 21, 21, 0
+buttonactionstrings=send({\"command\":\"charge\"}), send({\"command\":\"dryend\"}), send({\"command\":\"fcstart\"}), send({\"command\":\"fcend\"}), send({\"command\":\"scstart\"}), send({\"command\":\"scend\"}), send({\"command\":\"drop\"}), 
+buttonvisibility=true, true, true, true, true, true, true, false
+extrabuttonactions=0, 21, 0
+extrabuttonactionstrings=, send({\"command\":\"stop\"}), 
+xextrabuttonactions=0, 21
+xextrabuttonactionstrings=, send({\"command\":\"start\"})
+
+[ExtraComm]
+extrabaudrate=9600, 9600, 9600, 9600
+extrabytesize=8, 8, 8, 8
+extracomport=COM1, COM1, COM1, COM1
+extraparity=N, N, N, N
+extrastopbits=1, 1, 1, 1
+extratimeout=1, 1, 1, 1
+
+[ExtraDev]
+extradevices=112, 113, 118, 119
+extraname1=Sensor 1, Ambient, Moisture Loss (%), Fluidization Target (g)
+extraname2=Sensor 2, Humidity, Moisture Loss (g), Charge Weight (g)
+extraCurveVisibility1=true, false, false, false, false, false, false, false, false, false
+extraCurveVisibility2=false, false, false, false, false, false, false, false, false, false
+extraLCDvisibility1=true, true, true, true, false, false, false, false, false, false
+extraLCDvisibility2=true, true, true, true, false, false, false, false, false, false
+extradevicecolor1=#d00070, #0099c9, #7439a8, #00a95c
+extradevicecolor2=#ad0427, #7439a8, #e68a00, #00a9c9
+
+[Sliders]
+ModeTempSliders=C
+eventslidercoarse=0, 0, 0, 0
+eventslidersflags=0, 1, 1
+eventslidertemp=0, 0, 0, 0
+eventsliderunits=%, , , %
+slideractions=18, 0, 0, 18
+slidercommands="send({{ \"command\": \"fan_pct\", \"data\": {} }})", , , "send({{ \"command\": \"heater_pct\", \"data\": {} }})"
+sliderfactors=1, 1, 1, 1
+slidermax=100, 100, 100, 100
+slidermin=0, 0, 0, 0
+slideroffsets=0, 0, 0, 0
+slidervisibilities=1, 0, 0, 1
+
+[ExtraEventButtons]
+buttonlistmaxlen=11
+extraeventbuttoncolor=#0d47ff, #0d47ff, #0d47ff, #0d47ff, #0d47ff, #0d47ff, #0d47ff, #0d47ff, #0d47ff, #0d47ff, #0d47ff, #ff0505, #ff0505, #ff0505, #ff0505, #ff0505, #ff0505, #ff0505, #ff0505, #ff0505, #ff0505, #ff0505, #0d47ff, #000000, #808080, #808080
+extraeventbuttontextcolor=white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white, white
+extraeventsactions=22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22
+extraeventsactionstrings="send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"fan_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"heater_pct\", \"data\": {} }})", "send({{ \"command\": \"fluidization_hold\" }})", "send({{ \"command\": \"fluidization_release\" }})", "send({{ \"command\": \"fluidization_nudge\", \"data\": {} }})", "send({{ \"command\": \"fluidization_nudge\", \"data\": {} }})"
+extraeventsbuttonsflags=0, 1, 1
+extraeventsdescriptions=, , , , , , , , , , , , , , , , , , , , , , Engage fluidization hold, Release fluidization hold, Lower fluidization target, Raise fluidization target
+extraeventslabels=FAN0, FAN1, FAN2, FAN3, FAN4, FAN5, FAN6, FAN7, FAN8, FAN9, FAN10, HEATER0, HEATER1, HEATER2, HEATER3, HEATER4, HEATER5, HEATER6, HEATER7, HEATER8, HEATER9, HEATER10, FLUID_ON, FLUID_OFF, FLUID-, FLUID+
+extraeventstypes=0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4
+extraeventsvalues=0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 1, 1, -1, 1
+extraeventsvisibility=1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+
+[WebSocket]
+compression=true
+host=roastlink.local
+port=81
+path=
+connect_timeout=4
+reconnect_interval=2
+request_timeout=0.5
+id_node=id
+machine_node=
+command_node=command
+data_node=data
+request_data_command=getData
+channel_requests=, , , , , , , , , 
+channel_nodes=BT, ET, ET2, ET3, AT, AH, moisture_loss_g, moisture_loss_pct, fluidization_target_g, charge_weight_g
+channel_modes=2, 2, 2, 2, 0, 0, 0, 0, 0, 0
