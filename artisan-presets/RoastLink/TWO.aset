@@ -1,0 +1,53 @@
+[General]
+AmbientHumiditySource=6
+AmbientTempSource=5
+Delay=1000
+roastertype_setup=RoastLink TWO / TWO+
+
+[Device]
+id=111
+
+[DefaultButtons]
+buttonactions=21, 21, 21, 21, 21, 21, 21, 0
+buttonactionstrings=send({{\"command\": \"charge\"}}), send({{\"command\": \"dryend\"}}), send({{\"command\": \"fcstart\"}}), send({{\"command\": \"fcend\"}}), send({{\"command\": \"scstart\"}}), send({{\"command\": \"scend\"}}), send({{\"command\": \"drop\"}}), 
+buttonvisibility=true, true, true, true, true, true, true, false
+extrabuttonactions=0, 21, 0
+extrabuttonactionstrings=, send({{\"command\": \"stop\"}}), 
+xextrabuttonactions=0, 21
+xextrabuttonactionstrings=, send({{\"command\": \"start\"}})
+
+[ExtraComm]
+extrabaudrate=9600, 9600
+extrabytesize=8, 8
+extracomport=COM1, COM1
+extraparity=N, N
+extrastopbits=1, 1
+extratimeout=1, 1
+
+[ExtraDev]
+extradevices=112, 113
+extraname1=Sensor 1, Ambient
+extraname2=Sensor 2, Humidity
+extraCurveVisibility1=true, true, true, true, true, true, true, true, true, true
+extraCurveVisibility2=true, false, true, true, true, true, true, true, true, true
+extraLCDvisibility1=true, true, false, false, false, false, false, false, false, false
+extraLCDvisibility2=true, true, false, false, false, false, false, false, false, false
+extradevicecolor1=#ad0427, #49b260
+extradevicecolor2=#0099c9, #45a6cf
+
+[WebSocket]
+compression=true
+host=roastlink.local
+port=81
+path=
+connect_timeout=4
+reconnect_interval=2
+request_timeout=0.5
+id_node=id
+machine_node=
+command_node=command
+data_node=data
+request_data_command=getData
+channel_requests=, , , , , , , , , 
+channel_nodes=BT, ET, ET2, ET3, AT, AH, , , , 
+channel_modes=2, 2, 2, 2, 2, 0, 0, 0, 0, 0

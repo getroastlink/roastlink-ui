@@ -1,0 +1,32 @@
+[General]
+Delay=1000
+roastertype_setup=RoastLink ONE / ONEV2
+
+[Device]
+id=111
+
+[DefaultButtons]
+buttonactions=21, 21, 21, 21, 21, 21, 21, 0
+buttonactionstrings=send({{\"command\": \"charge\"}}), send({{\"command\": \"dryend\"}}), send({{\"command\": \"fcstart\"}}), send({{\"command\": \"fcend\"}}), send({{\"command\": \"scstart\"}}), send({{\"command\": \"scend\"}}), send({{\"command\": \"drop\"}}), 
+buttonvisibility=true, true, true, true, true, true, true, false
+extrabuttonactions=0, 21, 0
+extrabuttonactionstrings=, send({{\"command\": \"stop\"}}), 
+xextrabuttonactions=0, 21
+xextrabuttonactionstrings=, send({{\"command\": \"start\"}})
+
+[WebSocket]
+compression=true
+host=roastlink.local
+port=81
+path=
+connect_timeout=4
+reconnect_interval=2
+request_timeout=0.5
+id_node=id
+machine_node=
+command_node=command
+data_node=data
+request_data_command=getData
+channel_requests=, , , , , , , , , 
+channel_nodes=BT, ET, , , , , , , , 
+channel_modes=2, 2, 0, 0, 0, 0, 0, 0, 0, 0

@@ -38,6 +38,13 @@
 !API/
 !API/*.md
 
+# Public Artisan machine presets
+!artisan-presets/
+!artisan-presets/*.md
+!artisan-presets/*.sh
+!artisan-presets/RoastLink/
+!artisan-presets/RoastLink/*.aset
+
 # Also track .gitignore itself
 !.gitignore
 
