@@ -1,7 +1,8 @@
 {
-  "version": "1.1.7",
-  "bin": "https://ota.roastlink.com/corev3/roastlink-corev3-v1.1.7.bin",
-  "sha256": "",
-  "notes": "Improved CORE PRO AutoRoast setup, charge progression, and cooldown fan control. View the full release notes before installing.",
+  "version": "1.2.0",
+  "bin": "https://ota.roastlink.com/corev3/roastlink-corev3-v1.2.0.bin",
+  "size": 2352752,
+  "sha256": "a64e4346423d86d6e3824b203e9c82611865eeadf1df9619b302b8354ebe79b1",
+  "notes": "CORE V3 adds transactional HTTPS updates with integrity checks, first-boot validation and rollback, retained BLE, and AP+STA Wi-Fi recovery. Fan controls now show the interlock-adjusted level. View full release notes before installing.",
   "changelog_url": "https://app.notion.com/p/3a7d045abe438142b616d3e11b25a1ec"
 }
