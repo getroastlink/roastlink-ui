@@ -1,8 +1,7 @@
 {
-  "version": "1.2.0",
-  "bin": "https://ota.roastlink.com/corepro/roastlink-corepro-v1.2.0.bin",
-  "size": 2645392,
-  "sha256": "38add26ffaa6d98efd1a86a95c0533f964dd3b23028bd22ea57e9bba879be189",
-  "notes": "CORE PRO adds transactional HTTPS updates with exact image integrity checks, first-boot validation and rollback, retained BLE, and AP+STA Wi-Fi recovery. Existing heater/fan safety protections remain active. View full release notes before installing.",
+  "version": "1.1.7",
+  "bin": "https://ota.roastlink.com/corepro/roastlink-corepro-v1.1.7.bin",
+  "sha256": "",
+  "notes": "Improved CORE PRO AutoRoast setup, charge progression, and cooldown fan control. View the full release notes before installing.",
   "changelog_url": "https://app.notion.com/p/3a7d045abe438142b616d3e11b25a1ec"
 }
