@@ -1,8 +1,8 @@
 {
   "version": "1.2.1",
-  "bin": "https://ota.roastlink.com/twoplus/roastlink-twoplus-v1.2.1.bin",
-  "size": 2354928,
-  "sha256": "264bafdc81899a33d9b6f6f3736fee7531472aa03da73e91ec481bba44c70d0a",
-  "notes": "Temporary TWO+ 1.2.1 OTA test build for checking an upgrade from 1.2.0. Finish recording and return to normal Wi-Fi mode before updating.",
+  "bin": "https://ota.roastlink.com/twoplus/roastlink-twoplus-v1.2.1-ota-fix.bin",
+  "size": 2358784,
+  "sha256": "4fd353742f18e610b10623cfa34aa66fc38dd33b64323b2bc024f2acd2a1f08d",
+  "notes": "Temporary TWO+ 1.2.1 OTA test build. Fixes an update-button issue and a leftover update record that could send the unit back to older firmware. Finish recording and return to normal Wi-Fi mode before updating.",
   "changelog_url": "https://app.notion.com/p/3a7d045abe438142b616d3e11b25a1ec"
 }
