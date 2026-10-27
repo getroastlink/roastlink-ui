@@ -12,6 +12,7 @@
     *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100svh;display:grid;place-items:center;padding:40px 22px}
     main{width:100%;max-width:440px}.brand{font-size:17px;font-weight:650;letter-spacing:-.5px;display:flex;align-items:center;gap:10px;margin-bottom:54px}.mark{display:block;width:10px;height:10px;background:var(--accent);border-radius:50%}
     h1{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace!important;text-align:center;letter-spacing:-1.8px!important;margin-bottom:32px!important}.headline-version{display:block;color:var(--accent);font-size:42px;letter-spacing:-.04em;font-weight:800;margin-bottom:12px}.headline-subtitle{display:block;font-size:20px;font-weight:400;letter-spacing:-.03em;color:var(--muted)}.eyebrow{text-align:center}
+    .cloud-ready{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.03em;margin:-18px 0 30px}.cloud-ready span{color:var(--accent);font-weight:600}
     .eyebrow{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px}h1{font-size:46px;line-height:1.1;letter-spacing:-2px;font-weight:600;margin:0 0 18px}.intro{color:var(--muted);margin:0 0 30px;max-width:36ch}.release{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:15px 0;margin-bottom:26px;font-size:13px}.release span:first-child{color:var(--muted)}#firmware-version{font-variant-numeric:tabular-nums;text-align:right}
     ol{list-style:none;padding:0;margin:0 0 28px;counter-reset:step}li{counter-increment:step;display:flex;gap:13px;margin:13px 0;align-items:baseline}li::before{content:counter(step);color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}li span{color:var(--muted)}li strong{font-weight:500;color:var(--text)}
     .notice{padding:16px 18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:18px}.notice p{font-size:13px;color:var(--muted);margin:0 0 13px}.notice strong{color:var(--text);font-weight:550}label{display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer}input{margin:5px 0 0;accent-color:var(--accent);width:16px;height:16px;flex-shrink:0}
@@ -22,16 +23,10 @@
 <body>
   <main>
     <header class="brand"><span class="mark" aria-hidden="true"></span>RoastLink</header>
-    <p class="eyebrow">USB firmware updater</p>
-    <h1><span class="headline-version">ONE 2.0</span><span class="headline-subtitle">A new start.</span></h1>
+    <h1><span class="headline-version">ONE 2.0</span></h1>
+    <p class="cloud-ready">RoastLink <span>Cloud</span> ready</p>
     <p id="firmware-version" role="status" aria-live="polite" hidden></p>
-    <ol aria-label="Update steps">
-      <li><span><strong>Connect ONE V2</strong> with a USB data cable.</span></li>
-      <li><span><strong>Close Artisan, Firescope</strong> and other serial apps.</span></li>
-      <li><span><strong>Install below,</strong> select your USB port, and keep connected until complete.</span></li>
-    </ol>
     <div class="notice">
-      <p><strong>This installation erases all device data.</strong> Export recordings and save settings first. Wi-Fi, preferences and pairing will need to be set up again.</p>
       <label><input type="checkbox" id="erase-consent"><span>I’ve saved what I need. Erase and update my ONE V2.</span></label>
     </div>
     <p id="browser-warning" class="browser-warning" role="alert" hidden>Open this page in desktop Chrome or Edge to install over USB.</p>
