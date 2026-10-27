@@ -210,7 +210,7 @@
     <div class="version">
       <div class="version-item">
         <span class="version-label">Firmware Version:</span>
-        <span class="version-value">v1.0.2</span>
+        <span class="version-value" id="firmware-version">Loading…</span>
       </div>
     </div>
     
@@ -250,9 +250,15 @@
       <p style="margin-top: 10px;"><strong>Then:</strong> Unplug and replug your RoastLink ONE USB cable.</p>
     </div>
     
+    <div class="warning">
+      <strong>ONE V2 — firmware 2.0.0 USB installation</strong>
+      <p>This installer replaces the flash layout and erases all saved Wi-Fi settings, preferences, pairing and recordings. Export recordings and save your settings before continuing. Set up the device again after installation.</p>
+      <p>For ONE V2 with MAX31856 only. Do not install on the original ONE with MAX31855.</p>
+      <label><input type="checkbox" id="erase-consent"> I have saved what I need and understand that all device data will be erased.</label>
+    </div>
     <div class="flash-section">
-      <esp-web-install-button manifest="./manifest.json">
-        <button slot="activate">Flash Firmware</button>
+      <esp-web-install-button id="firmware-installer" manifest="./manifest.json">
+        <button slot="activate" id="flash-button" disabled>Flash Firmware</button>
       </esp-web-install-button>
     </div>
     
@@ -297,6 +303,47 @@
   </div>
   
   <script>
+    let firmwareReady = false;
+    function updateFlashButton() {
+      document.getElementById('flash-button').disabled =
+        !firmwareReady || !document.getElementById('erase-consent').checked;
+    }
+    document.getElementById('erase-consent').addEventListener('change', updateFlashButton);
+
+    // Read the version from the same manifest used by the installer.
+    async function loadFirmwareManifest() {
+      const version = document.getElementById('firmware-version');
+      try {
+        const response = await fetch('./manifest.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error('Manifest unavailable');
+        const manifest = await response.json();
+        if (typeof manifest.version !== 'string' || !manifest.version.trim() ||
+            !Array.isArray(manifest.builds) || !manifest.builds.some(build =>
+              build.chipFamily === 'ESP32-C6' && Array.isArray(build.parts) &&
+              build.parts.length > 0 && build.parts.every(part =>
+                typeof part.path === 'string' && part.path.length > 0 &&
+                Number.isInteger(part.offset) && part.offset >= 0))) {
+          throw new Error('Invalid ONE V2 manifest');
+        }
+        const installer = document.getElementById('firmware-installer');
+        installer.manifest = URL.createObjectURL(new Blob(
+          [JSON.stringify({ ...manifest, builds: manifest.builds.map(build => ({
+            ...build, parts: build.parts.map(part => ({
+              ...part, path: new URL(part.path, response.url).href
+            }))
+          })) })], { type: 'application/json' }
+        ));
+        version.textContent = 'v' + manifest.version;
+        firmwareReady = true;
+        updateFlashButton();
+      } catch (error) {
+        firmwareReady = false;
+        updateFlashButton();
+        version.textContent = 'Firmware unavailable — reload to retry';
+      }
+    }
+    loadFirmwareManifest();
+
     // Check browser compatibility
     const isChromium = !!window.chrome;
     const isOpera = !!window.opr;
