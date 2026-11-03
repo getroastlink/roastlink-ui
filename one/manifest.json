@@ -8,7 +8,7 @@
       "chipFamily": "ESP32-C6",
       "parts": [
         {
-          "path": "roastlink-onev2-v2.0.0-33624ecb7ba3-merged.bin",
+          "path": "roastlink-onev2-v2.0.0-437390f29df2-merged.bin",
           "offset": 0
         }
       ]

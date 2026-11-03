@@ -30,7 +30,7 @@
       <label><input type="checkbox" id="erase-consent"><span>I’ve saved what I need. Erase and update my RoastLink ONE.</span></label>
     </div>
     <p id="browser-warning" class="browser-warning" role="alert" hidden>Open this page in desktop Chrome or Edge to install over USB.</p>
-    <esp-web-install-button id="firmware-installer" manifest="./manifest.json?release=33624ecb7ba3">
+    <esp-web-install-button id="firmware-installer" manifest="./manifest.json?release=437390f29df2">
       <button slot="activate" id="flash-button" disabled>Install firmware</button>
       <span slot="unsupported">Use desktop Chrome or Edge for USB installation.</span>
       <span slot="not-allowed">Open this updater over HTTPS to install.</span>
@@ -53,7 +53,7 @@
     async function loadFirmwareManifest() {
       const version = document.getElementById('firmware-version');
       try {
-        const response = await fetch('./manifest.json?release=33624ecb7ba3', { cache: 'no-store' });
+        const response = await fetch('./manifest.json?release=437390f29df2', { cache: 'no-store' });
         if (!response.ok) throw new Error('Manifest unavailable');
         const manifest = await response.json();
         if (typeof manifest.version !== 'string' || !manifest.version.trim() ||
