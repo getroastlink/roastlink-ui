@@ -1,9 +1,9 @@
 {
   "model": "CORE PRO",
-  "version": "2.0.0",
-  "bin": "https://ota.roastlink.com/corepro/roastlink-corepro-v2.0.0.bin",
-  "size": 3072544,
-  "sha256": "0f57a609787cedc9943be41575db8ebc45cc92f3b7f77c32f2e66a09939c8f66",
-  "notes": "CORE PRO 2.0.0 adds Cloud backups, improved roast recording, guided setup, and AutoRoast refinements. IMPORTANT: After updating, run fan calibration again before roasting or using the heater\u2014even if previously calibrated. View the full release notes before installing.",
+  "version": "2.0.1",
+  "bin": "https://ota.roastlink.com/corepro/roastlink-corepro-v2.0.1.bin",
+  "size": 3101568,
+  "sha256": "391c8c825d6faad183b7ed97a02b8ab7f62728bb66c843a25a452d19d6ac447b",
+  "notes": "CORE PRO 2.0.1 improves empty-chamber preheating, bean-weight capture, profile loading, and safety-pause handling. Adds lid-weight calibration to the setup wizard and clearer recording controls. Upgrading from 1.1.7? Run fan calibration again before roasting or using the heater. View the full release notes before installing.",
   "changelog_url": "https://app.notion.com/p/3a7d045abe438142b616d3e11b25a1ec"
 }
