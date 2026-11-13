@@ -54,7 +54,7 @@
     async function loadFirmwareManifest() {
       const version = document.getElementById('firmware-version');
       try {
-        const response = await fetch('./usb-manifest.json?release=7ca4b9b28477', { cache: 'no-store' });
+        const response = await fetch('./usb-manifest.json?release=dfef7942be89', { cache: 'no-store' });
         if (!response.ok) throw new Error('Manifest unavailable');
         const manifest = await response.json();
         await Promise.race([customElements.whenDefined('esp-web-install-button'), new Promise((_, reject) => setTimeout(() => reject(new Error('Installer unavailable')), 15000))]);
