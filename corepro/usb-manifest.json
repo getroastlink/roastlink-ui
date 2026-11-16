@@ -8,7 +8,7 @@
       "chipFamily": "ESP32-S3",
       "parts": [
         {
-          "path": "roastlink-corepro-v2.0.2-d039188ac5ba-usb.bin",
+          "path": "roastlink-corepro-v2.0.2-d039188ac5ba-usb.bin?sha256=d039188ac5badd38f830bd1114a9b6337c55df4f530bc0104bc4e77cc52a30d7",
           "offset": 0
         }
       ]
