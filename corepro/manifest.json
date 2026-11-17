@@ -2,8 +2,8 @@
   "model": "CORE PRO",
   "version": "2.0.3",
   "bin": "https://ota.roastlink.com/corepro/roastlink-corepro-v2.0.3.bin",
-  "size": 2763824,
-  "sha256": "4ecec97d3a2c3a415140e9ad321c8157e33b240b06548c7b1fdb61d938f18db0",
+  "size": 2765536,
+  "sha256": "c5b57eb14bd38d73dd40f045272d64e93e72c7ae6036b5943710295570fd0892",
   "notes": "CORE PRO 2.0.3 improves guided lid calibration, setup messages and sensor labels. From 1.1.7: run fan calibration before using heat. View full release notes.",
   "changelog_url": "https://app.notion.com/p/3a7d045abe438142b616d3e11b25a1ec"
 }
