@@ -1,9 +1,9 @@
 {
   "model": "CORE PRO",
-  "version": "2.0.2",
-  "bin": "https://ota.roastlink.com/corepro/roastlink-corepro-v2.0.2.bin",
-  "size": 2753616,
-  "sha256": "c66b19023aaf91a07374df9befdadd99aeeceb4101698dae64235dd35279926c",
-  "notes": "CORE PRO 2.0.2 improves recording recovery, roast timers and status messages. From 1.1.7: run fan calibration before using heat. View full release notes.",
+  "version": "2.0.3",
+  "bin": "https://ota.roastlink.com/corepro/roastlink-corepro-v2.0.3.bin",
+  "size": 2763072,
+  "sha256": "8b3b801ed7e87f88f887815faa2ab5b0289268c4649d8417572412cf2e5c78fc",
+  "notes": "CORE PRO 2.0.3 improves guided lid calibration, setup messages and sensor labels. From 1.1.7: run fan calibration before using heat. View full release notes.",
   "changelog_url": "https://app.notion.com/p/3a7d045abe438142b616d3e11b25a1ec"
 }
