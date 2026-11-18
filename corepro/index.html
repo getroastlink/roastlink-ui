@@ -24,14 +24,20 @@
   <main>
     <header class="brand"><span class="mark" aria-hidden="true"></span>RoastLink</header>
     <h1><span class="headline-version">CORE PRO</span></h1>
-    <p class="cloud-ready">USB recovery · <span id="release-version">Loading…</span></p>
+    <p class="cloud-ready">USB firmware · <span id="release-version">Loading…</span></p>
     <p id="firmware-version" role="status" aria-live="polite" hidden></p>
     <div class="notice">
-      <p><strong>Connect by USB only.</strong> Disconnect heater and fan power before installing. This erases settings, Wi-Fi, recordings and calibrations. Complete setup and calibration again before using heat.</p>
+      <p>Connect by USB only. Disconnect heater and fan power before updating.</p>
+      <label><input type="checkbox" id="wipe-mode"><span>Wipe all device data and reinstall</span></label>
+    </div>
+    <button type="button" id="keep-button" disabled>Update &amp; keep data</button>
+    <p id="keep-status" role="status" aria-live="polite" hidden></p>
+    <div id="wipe-warning" class="notice" hidden>
+      <p>This erases settings, Wi-Fi, recordings and calibrations. Complete setup and calibration again before using heat.</p>
       <label><input type="checkbox" id="erase-consent"><span>I understand all device data will be erased. Reinstall my RoastLink CORE PRO.</span></label>
     </div>
     <p id="browser-warning" class="browser-warning" role="alert" hidden>Open this page in desktop Chrome or Edge to install over USB.</p>
-    <esp-web-install-button id="firmware-installer" >
+    <esp-web-install-button id="firmware-installer" hidden>
       <button slot="activate" id="flash-button" disabled>Erase &amp; reinstall</button>
       <span slot="unsupported">Use desktop Chrome or Edge for USB installation.</span>
       <span slot="not-allowed">Open this updater over HTTPS to install.</span>
@@ -87,6 +93,57 @@
       }
     }
     loadFirmwareManifest();
+
+    const wipeMode = document.getElementById('wipe-mode');
+    const keepButton = document.getElementById('keep-button');
+    const keepStatus = document.getElementById('keep-status');
+    keepButton.disabled = !browserSupported;
+    wipeMode.addEventListener('change', () => {
+      document.getElementById('erase-consent').checked = false;
+      document.getElementById('wipe-warning').hidden = !wipeMode.checked;
+      document.getElementById('firmware-installer').hidden = !wipeMode.checked;
+      keepButton.hidden = wipeMode.checked;
+      keepStatus.hidden = true;
+      updateFlashButton();
+    });
+    keepButton.addEventListener('click', async () => {
+      wipeMode.disabled = keepButton.disabled = true;
+      keepStatus.hidden = false;
+      keepStatus.textContent = 'Select your CORE PRO USB port…';
+      let transport, loader;
+      try {
+        const port = await navigator.serial.requestPort();
+        const [{ESPLoader, Transport}, {sha256, updateFirmware}] = await Promise.all([
+          import('https://unpkg.com/esptool-js@0.7.1/bundle.js'),
+          import('./keep-data.mjs'),
+        ]);
+        const status = message => { keepStatus.textContent = message; };
+        status('Downloading firmware…');
+        const response = await fetch('./keep-data-release.json', {cache: 'no-store'});
+        if (!response.ok) throw new Error('Firmware manifest unavailable');
+        const release = await response.json();
+        const download = await fetch(new URL(release.path, response.url));
+        if (!download.ok) throw new Error('Firmware download unavailable');
+        const merged = new Uint8Array(await download.arrayBuffer());
+        if (merged.length !== 0x800000 || await sha256(merged) !== release.mergedSha256) {
+          throw new Error('Recovery package integrity check failed');
+        }
+        transport = new Transport(port);
+        loader = new ESPLoader({transport, baudrate: 115200});
+        status('Checking device and boot slot…');
+        if (!(await loader.main()).startsWith('ESP32-S3')) throw new Error('CORE PRO requires ESP32-S3');
+        await updateFirmware(loader, release, merged.slice(0x10000, 0x10000 + release.size), status);
+        await loader.after('hard_reset');
+        loader = undefined;
+        status('Update written and verified. Device restarting…');
+      } catch (error) {
+        keepStatus.textContent = error.name === 'NotFoundError' ? 'No USB port selected.' : error.message;
+      } finally {
+        if (loader) await loader.after('hard_reset').catch(() => {});
+        if (transport) await transport.disconnect().catch(() => {});
+        wipeMode.disabled = keepButton.disabled = false;
+      }
+    });
 
   </script>
 </body>
