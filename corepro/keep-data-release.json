@@ -1,8 +1,8 @@
 {
   "version": "2.0.3",
-  "path": "roastlink-corepro-v2.0.3-38a5c52f5bc2-usb.bin?sha256=38a5c52f5bc28d76181781b2fcfcd4529f4dc8eb21dd1eae52ad3841d83deaca",
-  "mergedSha256": "38a5c52f5bc28d76181781b2fcfcd4529f4dc8eb21dd1eae52ad3841d83deaca",
-  "sha256": "d7f859ae798aa3f5c348e8bd447f928f8d1e2271a0d33f18e1d257be574ab837",
+  "path": "roastlink-corepro-v2.0.3-30b3b818c0c7-usb.bin?sha256=30b3b818c0c772986393ae2aedb94be7b18a6717794930ce63484564d7d89376",
+  "mergedSha256": "30b3b818c0c772986393ae2aedb94be7b18a6717794930ce63484564d7d89376",
+  "sha256": "be870569423ffbe7a90e119a2ee90d9423d5864a97f9f40137838ea722403d5a",
   "partitionSha256": "4fd22eaa867a832567fff970db4d2cd2149e5ba037869b4295fcaf1cee4a6dbf",
   "installed": [
     {
@@ -41,17 +41,17 @@
       "md5": "0f39908251b2360189353123d3ff67f6"
     },
     {
-      "size": 2766416,
-      "header": "4a76b0f1b2a180a50d4bc634fcd5f7605d1d9289cccf9bf128e189aaa6c72b0a",
-      "md5": "ded0ebfb484461d9c3e85ee9a69c05d3"
-    },
-    {
       "size": 2776576,
       "header": "9706145250050bd056afa012a8e33edf1ef0c8b0e4498001396cecb01b24a754",
       "md5": "58eb6783c45943884e5ef17ba6679e99"
+    },
+    {
+      "size": 2766416,
+      "header": "4a76b0f1b2a180a50d4bc634fcd5f7605d1d9289cccf9bf128e189aaa6c72b0a",
+      "md5": "ded0ebfb484461d9c3e85ee9a69c05d3"
     }
   ],
-  "size": 2766416,
-  "header": "4a76b0f1b2a180a50d4bc634fcd5f7605d1d9289cccf9bf128e189aaa6c72b0a",
-  "md5": "ded0ebfb484461d9c3e85ee9a69c05d3"
+  "size": 2776576,
+  "header": "9706145250050bd056afa012a8e33edf1ef0c8b0e4498001396cecb01b24a754",
+  "md5": "58eb6783c45943884e5ef17ba6679e99"
 }
