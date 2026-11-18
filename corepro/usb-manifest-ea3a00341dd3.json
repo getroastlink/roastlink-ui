@@ -1,0 +1,17 @@
+{
+  "name": "RoastLink CORE PRO USB recovery",
+  "version": "2.0.4",
+  "new_install_prompt_erase": false,
+  "new_install_improv_wait_time": 0,
+  "builds": [
+    {
+      "chipFamily": "ESP32-S3",
+      "parts": [
+        {
+          "path": "roastlink-corepro-v2.0.4-ea3a00341dd3-usb.bin?sha256=ea3a00341dd3d0e5e804c63715bf8b20786faf6611366bd06e325f0e0535c6b1",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}
