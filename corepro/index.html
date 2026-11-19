@@ -115,7 +115,7 @@
         const port = await navigator.serial.requestPort();
         const [{ESPLoader, Transport}, {sha256, updateFirmware, withDeadline}] = await Promise.all([
           import('https://unpkg.com/esptool-js@0.7.1/bundle.js'),
-          import('./keep-data.mjs?rev=layout-checked-update'),
+          import('./keep-data.mjs?rev=usb-read-recovery'),
         ]);
         deadline = withDeadline;
         const status = message => { keepStatus.textContent = message; };
@@ -130,7 +130,10 @@
           throw new Error('Recovery package integrity check failed');
         }
         transport = new Transport(port);
-        loader = new ESPLoader({transport, baudrate: 115200});
+        // A 4 KiB SLIP packet can nearly double in size when escaped.
+        loader = new ESPLoader({transport, baudrate: 115200, serialOptions: {bufferSize: 16384}});
+        // Let the serial read fail before cleanup tries to reset the device.
+        loader.FLASH_READ_TIMEOUT = 3000;
         status('Connecting to ESP32-S3 bootloader…');
         const chip = await deadline(() => loader.main(), 'Connecting to the USB bootloader', 25000);
         if (!chip.startsWith('ESP32-S3')) throw new Error('CORE PRO requires ESP32-S3');
@@ -139,22 +142,23 @@
       } catch (error) {
         keepStatus.textContent = error.name === 'NotFoundError' ? 'No USB port selected.' : error.message;
       } finally {
-        let resetOK = true;
         let disconnected = true;
         if (loader) {
-          resetOK = await deadline(async () => {
+          await deadline(async () => {
             await transport.setDTR(false);
             await loader.after('hard_reset');
-            return true;
-          }, 'Restarting device', 3000).catch(() => false);
+          }, 'Restarting device', 3000).catch(() => {});
         }
         if (transport) {
           disconnected = await deadline(() => transport.disconnect(), 'Closing USB connection', 3000)
             .then(() => true, () => false);
         }
         if (imageWritten) keepStatus.textContent = 'Update written and verified.';
-        if (!resetOK || !disconnected || imageWritten) {
-          keepStatus.textContent += ' If the device does not restart, unplug and reconnect USB.';
+        if (loader) {
+          keepStatus.textContent += ' If the device stays unresponsive, press RESET or power-cycle it.';
+        }
+        if (!disconnected) {
+          keepStatus.textContent += ' Reload this page before retrying.';
         }
         wipeMode.disabled = keepButton.disabled = !disconnected;
       }
