@@ -27,6 +27,8 @@ export function planUpdate(bytes) {
     const view = new DataView(entry.buffer, entry.byteOffset, entry.byteLength);
     const seq = view.getUint32(0, true);
     const state = view.getUint32(24, true);
+    // Espressif's boot_app0 seed uses a zero sequence with an erased tail.
+    if (seq === 0 && entry.subarray(4).every(byte => byte === 255)) continue;
     if (!seq || seq === 0xffffffff || sequenceCrc(entry) !== view.getUint32(28, true) ||
         ![0, 1, 2, 3, 4, 0xffffffff].includes(state)) throw new Error('Unrecognized boot metadata');
     if (state !== 3 && state !== 4) records.push({i, seq, state});
@@ -34,7 +36,7 @@ export function planUpdate(bytes) {
   records.sort((a, b) => b.seq - a.seq);
   const active = records[0];
   if ((!active && bytes.some(byte => byte !== 255)) ||
-      (active && (active.state !== 2 || active.seq >= 0xfffffffe || records[1]?.seq === active.seq))) {
+      (active && (![2, 0xffffffff].includes(active.state) || active.seq >= 0xfffffffe || records[1]?.seq === active.seq))) {
     throw new Error('The running firmware has no confirmed boot slot');
   }
   const activeSlot = active ? (active.seq - 1) % 2 : 0;
