@@ -60,7 +60,7 @@
     async function loadFirmwareManifest() {
       const version = document.getElementById('firmware-version');
       try {
-        const response = await fetch('./usb-manifest-c040eb7fb238.json', { cache: 'no-store' });
+        const response = await fetch('./usb-manifest-f2b12642aa80.json', { cache: 'no-store' });
         if (!response.ok) throw new Error('Manifest unavailable');
         const manifest = await response.json();
         await Promise.race([customElements.whenDefined('esp-web-install-button'), new Promise((_, reject) => setTimeout(() => reject(new Error('Installer unavailable')), 15000))]);
@@ -121,7 +121,7 @@
         ({withDeadline: deadline, resetDevice} = updater);
         const status = message => { keepStatus.textContent = message; };
         status('Downloading firmware…');
-        const response = await fetch('./keep-data-release-c040eb7fb238.json', {cache: 'no-store'});
+        const response = await fetch('./keep-data-release-f2b12642aa80.json', {cache: 'no-store'});
         if (!response.ok) throw new Error('Firmware manifest unavailable');
         const release = await response.json();
         const download = await fetch(new URL(release.path, response.url));
