@@ -115,7 +115,7 @@
         const port = await navigator.serial.requestPort();
         const [{ESPLoader, Transport}, {sha256, updateFirmware, withDeadline}] = await Promise.all([
           import('https://unpkg.com/esptool-js@0.7.1/bundle.js'),
-          import('./keep-data.mjs?rev=usb-read-recovery'),
+          import('./keep-data.mjs?rev=usb-small-packets'),
         ]);
         deadline = withDeadline;
         const status = message => { keepStatus.textContent = message; };
