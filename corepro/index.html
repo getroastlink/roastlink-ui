@@ -110,14 +110,15 @@
       wipeMode.disabled = keepButton.disabled = true;
       keepStatus.hidden = false;
       keepStatus.textContent = 'Select your CORE PRO USB port…';
-      let transport, loader, deadline, imageWritten = false;
+      let transport, loader, deadline, resetDevice, imageWritten = false;
       try {
         const port = await navigator.serial.requestPort();
-        const [{ESPLoader, Transport}, {sha256, updateFirmware, withDeadline}] = await Promise.all([
+        const [{ESPLoader, Transport}, updater] = await Promise.all([
           import('https://unpkg.com/esptool-js@0.7.1/bundle.js'),
-          import('./keep-data.mjs?rev=usb-small-packets'),
+          import('./keep-data.mjs?rev=usb-reset-pulse'),
         ]);
-        deadline = withDeadline;
+        const {sha256, updateFirmware} = updater;
+        ({withDeadline: deadline, resetDevice} = updater);
         const status = message => { keepStatus.textContent = message; };
         status('Downloading firmware…');
         const response = await fetch('./keep-data-release-ea3a00341dd3.json', {cache: 'no-store'});
@@ -143,18 +144,20 @@
         keepStatus.textContent = error.name === 'NotFoundError' ? 'No USB port selected.' : error.message;
       } finally {
         let disconnected = true;
+        let resetSent = false;
         if (loader) {
-          await deadline(async () => {
-            await transport.setDTR(false);
-            await loader.after('hard_reset');
-          }, 'Restarting device', 3000).catch(() => {});
+          if (imageWritten) keepStatus.textContent = 'Update verified. Restarting CORE PRO…';
+          resetSent = await deadline(() => resetDevice(transport), 'Restarting device', 3000)
+            .then(() => true, () => false);
         }
         if (transport) {
           disconnected = await deadline(() => transport.disconnect(), 'Closing USB connection', 3000)
             .then(() => true, () => false);
         }
-        if (imageWritten) keepStatus.textContent = 'Update written and verified.';
-        if (loader) {
+        if (imageWritten) {
+          keepStatus.textContent = resetSent ? 'Update complete. Restart signal sent.' : 'Update written and verified.';
+        }
+        if (loader && (!imageWritten || !resetSent)) {
           keepStatus.textContent += ' If the device stays unresponsive, press RESET or power-cycle it.';
         }
         if (!disconnected) {

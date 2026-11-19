@@ -4,6 +4,14 @@ const metadata = 0xe000;
 const tableAddress = 0x8000;
 const readPacketSize = 512;
 
+export async function resetDevice(transport) {
+  await transport.setDTR(false);
+  await transport.setRTS(true);
+  await new Promise(resolve => setTimeout(resolve, 200));
+  await transport.setRTS(false);
+  await new Promise(resolve => setTimeout(resolve, 200));
+}
+
 async function readFlash(loader, address, size) {
   if (!loader.IS_STUB) throw new Error('USB flash reader is unavailable');
   const request = new Uint8Array(16);
