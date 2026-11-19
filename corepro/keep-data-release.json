@@ -1,62 +1,9 @@
 {
-  "version": "2.0.4",
-  "path": "roastlink-corepro-v2.0.4-ea3a00341dd3-usb.bin?sha256=ea3a00341dd3d0e5e804c63715bf8b20786faf6611366bd06e325f0e0535c6b1",
-  "mergedSha256": "ea3a00341dd3d0e5e804c63715bf8b20786faf6611366bd06e325f0e0535c6b1",
-  "sha256": "677a361d228f1568a064a9bebeb5eea93404291fd35d40aae1b083bb7c165f6d",
+  "version": "2.0.5",
+  "path": "roastlink-corepro-v2.0.5-c040eb7fb238-usb.bin?sha256=c040eb7fb238c1146b88cdfd7e4712b384d58111e4cc83bc81f4b329ab41788d",
+  "mergedSha256": "c040eb7fb238c1146b88cdfd7e4712b384d58111e4cc83bc81f4b329ab41788d",
+  "sha256": "c62f53d8c78458343e0c3b2aa60f49a4f92287fa3dd35e7312b0d73bb53de11d",
   "partitionSha256": "4fd22eaa867a832567fff970db4d2cd2149e5ba037869b4295fcaf1cee4a6dbf",
-  "installed": [
-    {
-      "size": 3145520,
-      "header": "3a881abe4f53432848f78ab4d6680bf95b8a020858d4e3821a87e067502f4ad6",
-      "md5": "3fa211e0569f174a4fb0a97735be4838"
-    },
-    {
-      "size": 3102320,
-      "header": "3295c0f038a67a90aa1c11c67b1f869992d9adfc5a080986f2200270a3dfb4f6",
-      "md5": "58a0456d3f6f889723bc324bc13ce7fd"
-    },
-    {
-      "size": 3100352,
-      "header": "63472cafe9b213b869895e841543a958eb6fa72d79379a8c94d5e53344ca3667",
-      "md5": "97761f4a743aaafa32352b7e64ad35d4"
-    },
-    {
-      "size": 3118352,
-      "header": "d09ec859f89c61d16c74e73616873216643557a390229f68305954f2c7a95bc9",
-      "md5": "9d7f77fef1e79eafcb1835a7cc1a48d4"
-    },
-    {
-      "size": 3030464,
-      "header": "28b15fee41ea4496669233265ea308356cdad830a2841961633714d882f5584a",
-      "md5": "303d65fc1f7db29622969c8341f2c7ec"
-    },
-    {
-      "size": 2754512,
-      "header": "9cd190de56697a7ca96f4a171d6a8746bd69677a6553a975b2e6cbcef02271bf",
-      "md5": "2632e70e8edcd1621a4418b8aa944bd6"
-    },
-    {
-      "size": 2765536,
-      "header": "53de1074ac2deeb5cb7592a7a7eca635a67c1232d985a46feef328c0e830b1a4",
-      "md5": "0f39908251b2360189353123d3ff67f6"
-    },
-    {
-      "size": 2776576,
-      "header": "9706145250050bd056afa012a8e33edf1ef0c8b0e4498001396cecb01b24a754",
-      "md5": "58eb6783c45943884e5ef17ba6679e99"
-    },
-    {
-      "size": 2766416,
-      "header": "4a76b0f1b2a180a50d4bc634fcd5f7605d1d9289cccf9bf128e189aaa6c72b0a",
-      "md5": "ded0ebfb484461d9c3e85ee9a69c05d3"
-    },
-    {
-      "size": 2779984,
-      "header": "0a481b6eec4186ae3eeda5e0814a155b46a55a2781df422e3e4fc925d8ff0ae3",
-      "md5": "378c0b3a07e37630ffe3ce7b0b7f0119"
-    }
-  ],
-  "size": 2779984,
-  "header": "0a481b6eec4186ae3eeda5e0814a155b46a55a2781df422e3e4fc925d8ff0ae3",
-  "md5": "378c0b3a07e37630ffe3ce7b0b7f0119"
+  "size": 2786208,
+  "md5": "d264821518de7dd42ef414dbd66ab6fc"
 }
