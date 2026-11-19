@@ -78,11 +78,6 @@ export async function updateFirmware(loader, release, application, status) {
     throw new Error('This device uses a different flash layout');
   }
   const plan = planUpdate(await check('Reading boot slot', () => loader.readFlash(metadata, 2 * sector)));
-  const header = await sha256(await check('Identifying installed firmware', () => loader.readFlash(plan.activeAddress, 0x120)));
-  const known = release.installed.find(image => image.header === header);
-  if (!known || (await check('Verifying installed firmware', () => loader.flashMd5sum(plan.activeAddress, known.size))).toLowerCase() !== known.md5) {
-    throw new Error('Installed firmware could not be identified as a supported CORE PRO build');
-  }
   async function write(address, data) {
     await loader.writeFlash({
       fileArray: [{address, data}], flashMode: 'keep', flashFreq: 'keep', flashSize: 'keep',
