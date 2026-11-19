@@ -51,16 +51,34 @@ export function planUpdate(bytes) {
   };
 }
 
+export async function withDeadline(action, label, timeoutMs = 15000) {
+  let timer;
+  try {
+    return await Promise.race([
+      Promise.resolve().then(action),
+      new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error(label + ' timed out')), timeoutMs);
+      }),
+    ]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function updateFirmware(loader, release, application, status) {
+  const check = (label, action) => {
+    status(label + '…');
+    return withDeadline(action, label);
+  };
   if (application.length !== release.size || application.length > 0x300000 ||
       await sha256(application) !== release.sha256) throw new Error('Firmware integrity check failed');
-  if (await sha256(await loader.readFlash(tableAddress, sector)) !== release.partitionSha256) {
+  if (await sha256(await check('Reading flash layout', () => loader.readFlash(tableAddress, sector))) !== release.partitionSha256) {
     throw new Error('This device uses a different flash layout');
   }
-  const plan = planUpdate(await loader.readFlash(metadata, 2 * sector));
-  const header = await sha256(await loader.readFlash(plan.activeAddress, 0x120));
+  const plan = planUpdate(await check('Reading boot slot', () => loader.readFlash(metadata, 2 * sector)));
+  const header = await sha256(await check('Identifying installed firmware', () => loader.readFlash(plan.activeAddress, 0x120)));
   const known = release.installed.find(image => image.header === header);
-  if (!known || (await loader.flashMd5sum(plan.activeAddress, known.size)).toLowerCase() !== known.md5) {
+  if (!known || (await check('Verifying installed firmware', () => loader.flashMd5sum(plan.activeAddress, known.size))).toLowerCase() !== known.md5) {
     throw new Error('Installed firmware could not be identified as a supported CORE PRO build');
   }
   async function write(address, data) {

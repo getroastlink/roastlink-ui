@@ -110,13 +110,14 @@
       wipeMode.disabled = keepButton.disabled = true;
       keepStatus.hidden = false;
       keepStatus.textContent = 'Select your CORE PRO USB port…';
-      let transport, loader;
+      let transport, loader, deadline, imageWritten = false;
       try {
         const port = await navigator.serial.requestPort();
-        const [{ESPLoader, Transport}, {sha256, updateFirmware}] = await Promise.all([
+        const [{ESPLoader, Transport}, {sha256, updateFirmware, withDeadline}] = await Promise.all([
           import('https://unpkg.com/esptool-js@0.7.1/bundle.js'),
-          import('./keep-data.mjs'),
+          import('./keep-data.mjs?rev=preflight-timeouts'),
         ]);
+        deadline = withDeadline;
         const status = message => { keepStatus.textContent = message; };
         status('Downloading firmware…');
         const response = await fetch('./keep-data-release-ea3a00341dd3.json', {cache: 'no-store'});
@@ -130,18 +131,32 @@
         }
         transport = new Transport(port);
         loader = new ESPLoader({transport, baudrate: 115200});
-        status('Checking device and boot slot…');
-        if (!(await loader.main()).startsWith('ESP32-S3')) throw new Error('CORE PRO requires ESP32-S3');
+        status('Connecting to ESP32-S3 bootloader…');
+        const chip = await deadline(() => loader.main(), 'Connecting to the USB bootloader', 25000);
+        if (!chip.startsWith('ESP32-S3')) throw new Error('CORE PRO requires ESP32-S3');
         await updateFirmware(loader, release, merged.slice(0x10000, 0x10000 + release.size), status);
-        await loader.after('hard_reset');
-        loader = undefined;
-        status('Update written and verified. Device restarting…');
+        imageWritten = true;
       } catch (error) {
         keepStatus.textContent = error.name === 'NotFoundError' ? 'No USB port selected.' : error.message;
       } finally {
-        if (loader) await loader.after('hard_reset').catch(() => {});
-        if (transport) await transport.disconnect().catch(() => {});
-        wipeMode.disabled = keepButton.disabled = false;
+        let resetOK = true;
+        let disconnected = true;
+        if (loader) {
+          resetOK = await deadline(async () => {
+            await transport.setDTR(false);
+            await loader.after('hard_reset');
+            return true;
+          }, 'Restarting device', 3000).catch(() => false);
+        }
+        if (transport) {
+          disconnected = await deadline(() => transport.disconnect(), 'Closing USB connection', 3000)
+            .then(() => true, () => false);
+        }
+        if (imageWritten) keepStatus.textContent = 'Update written and verified.';
+        if (!resetOK || !disconnected || imageWritten) {
+          keepStatus.textContent += ' If the device does not restart, unplug and reconnect USB.';
+        }
+        wipeMode.disabled = keepButton.disabled = !disconnected;
       }
     });
 
