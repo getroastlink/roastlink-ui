@@ -16,6 +16,7 @@
     .eyebrow{color:var(--muted);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin:0 0 8px}h1{font-size:46px;line-height:1.1;letter-spacing:-2px;font-weight:600;margin:0 0 18px}.intro{color:var(--muted);margin:0 0 30px;max-width:36ch}.release{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:15px 0;margin-bottom:26px;font-size:13px}.release span:first-child{color:var(--muted)}#firmware-version{font-variant-numeric:tabular-nums;text-align:right}
     ol{list-style:none;padding:0;margin:0 0 28px;counter-reset:step}li{counter-increment:step;display:flex;gap:13px;margin:13px 0;align-items:baseline}li::before{content:counter(step);color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}li span{color:var(--muted)}li strong{font-weight:500;color:var(--text)}
     .notice{padding:16px 18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:18px}.notice p{font-size:13px;color:var(--muted);margin:0 0 13px}.notice strong{color:var(--text);font-weight:550}label{display:flex;align-items:flex-start;gap:10px;font-size:13px;cursor:pointer}input{margin:5px 0 0;accent-color:var(--accent);width:16px;height:16px;flex-shrink:0}
+    .wipe-option{margin:14px 0;color:var(--muted)}
     esp-web-install-button{display:block;--esp-tools-button-color:var(--accent)}button{font:inherit;font-weight:600;border:0;border-radius:10px;background:var(--accent);color:white;width:100%;padding:15px 20px;cursor:pointer}button:hover:not(:disabled){filter:brightness(1.12)}button:disabled{opacity:.35;cursor:not-allowed}button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--text);outline-offset:4px}.compat{font-size:11px;color:var(--muted);text-align:center;margin:12px 0 28px}
     details{border-top:1px solid var(--border);padding-top:18px;color:var(--muted);font-size:13px}summary{cursor:pointer;color:var(--muted)}details p{margin:12px 0 0}footer{margin-top:40px;color:var(--muted);font-size:11px}.browser-warning{color:#f3c98b;font-size:13px;margin:0 0 18px}[hidden]{display:none!important}@media(max-width:480px){body{padding:30px 22px}.brand{margin-bottom:38px}h1{font-size:40px}}
   </style>
@@ -29,10 +30,10 @@
     <div class="notice">
       <p>Connect by USB only. Disconnect heater and fan power before updating.</p>
       <label><input type="checkbox" id="model-confirm"><span>I checked the model label. My device is a RoastLink TWO+.</span></label>
-      <label><input type="checkbox" id="wipe-mode"><span>Wipe all device data and reinstall</span></label>
     </div>
     <button type="button" id="keep-button" disabled>Update &amp; keep data</button>
     <p id="keep-status" role="status" aria-live="polite" hidden></p>
+    <label class="wipe-option"><input type="checkbox" id="wipe-mode"><span>Optional: wipe all device data and reinstall</span></label>
     <div id="wipe-warning" class="notice" hidden>
       <p>This erases settings, Wi-Fi, recordings and calibrations. Complete setup and calibration again before using heat.</p>
       <label><input type="checkbox" id="erase-consent"><span>I understand all device data will be erased. Reinstall my RoastLink TWO+.</span></label>
@@ -100,7 +101,7 @@
     const keepButton = document.getElementById('keep-button');
     const keepStatus = document.getElementById('keep-status');
     function refreshModelConfirmation() {
-      keepButton.disabled = !browserSupported || !modelConfirm.checked;
+      keepButton.disabled = !browserSupported || !modelConfirm.checked || wipeMode.checked;
       updateFlashButton();
     }
     modelConfirm.addEventListener('change', refreshModelConfirmation);
@@ -109,9 +110,8 @@
       document.getElementById('erase-consent').checked = false;
       document.getElementById('wipe-warning').hidden = !wipeMode.checked;
       document.getElementById('firmware-installer').hidden = !wipeMode.checked;
-      keepButton.hidden = wipeMode.checked;
       keepStatus.hidden = true;
-      updateFlashButton();
+      refreshModelConfirmation();
     });
     keepButton.addEventListener('click', async () => {
       if (!modelConfirm.checked) return;
