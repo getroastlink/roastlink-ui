@@ -119,15 +119,20 @@
       keepStatus.hidden = false;
       keepStatus.textContent = 'Select your TWO+ V3 USB port…';
       let transport, loader, deadline, resetDevice, imageWritten = false;
+      let stage = 'Selecting USB port';
       try {
         const port = await navigator.serial.requestPort();
+        stage = 'Loading USB updater';
         const [{ESPLoader, Transport}, updater] = await Promise.all([
           import('https://unpkg.com/esptool-js@0.7.1/bundle.js'),
           import('../corepro/keep-data.mjs?rev=usb-reset-pulse'),
         ]);
         const {sha256, updateFirmware} = updater;
         ({withDeadline: deadline, resetDevice} = updater);
-        const status = message => { keepStatus.textContent = message; };
+        const status = message => {
+          stage = message.replace(/…$/, '');
+          keepStatus.textContent = message;
+        };
         status('Downloading firmware…');
         const response = await fetch('./keep-data-release-c4324025a2c5.json', {cache: 'no-store'});
         if (!response.ok) throw new Error('Firmware manifest unavailable');
@@ -149,7 +154,7 @@
         await updateFirmware(loader, release, merged.slice(0x10000, 0x10000 + release.size), status);
         imageWritten = true;
       } catch (error) {
-        keepStatus.textContent = error.name === 'NotFoundError' ? 'No USB port selected.' : error.message;
+        keepStatus.textContent = error.name === 'NotFoundError' && !transport ? 'No USB port selected.' : `${stage}: ${error.message}`;
       } finally {
         let disconnected = true;
         let resetSent = false;
@@ -165,7 +170,10 @@
         if (imageWritten) {
           keepStatus.textContent = resetSent ? 'Update complete. Restart signal sent.' : 'Update written and verified.';
         }
-        if (loader && (!imageWritten || !resetSent)) {
+        if (!imageWritten && resetSent) {
+          keepStatus.textContent += ' Restart signal sent after the update error.';
+        }
+        if (loader && !resetSent) {
           keepStatus.textContent += ' If the device stays unresponsive, press RESET or power-cycle it.';
         }
         if (!disconnected) {
