@@ -1,0 +1,17 @@
+{
+  "name": "RoastLink TWO+ V3 USB recovery",
+  "version": "2.0.6",
+  "new_install_prompt_erase": false,
+  "new_install_improv_wait_time": 0,
+  "builds": [
+    {
+      "chipFamily": "ESP32-S3",
+      "parts": [
+        {
+          "path": "roastlink-twoplusv3-v2.0.6-c4324025a2c5-usb.bin?sha256=c4324025a2c54fa947c97b8707160c048449e5ad7f5deda890bce1d83a8e494a",
+          "offset": 0
+        }
+      ]
+    }
+  ]
+}
